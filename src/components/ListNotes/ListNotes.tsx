@@ -1,8 +1,13 @@
-import { AppRoutes } from '@/types/generalTypes';
+import { AppRoutes, NotesListT } from '@/types/generalTypes';
 import { NavLink as MantineNavlink } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
 
-export function ListNotes({ notes, close }) {
+interface IListNotesProps {
+  notes: NotesListT;
+  close: () => void;
+}
+
+export function ListNotes({ notes, close }: IListNotesProps) {
   return (
     <ul style={{ padding: 0, margin: 0 }}>
       {notes.map(note => (
