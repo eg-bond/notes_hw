@@ -1,4 +1,4 @@
-import { ListNotes } from '@/pages/ListNotes';
+import { MainLayout } from '@/pages/MainLayout';
 import { NotFound } from '@/pages/NotFound';
 import { SelectedNote } from '@/pages/SelectedNote';
 import { SignIn } from '@/pages/SignIn';
@@ -13,8 +13,8 @@ export default function Routing() {
       <Route path={AppRoutes.SignIn} element={<SignIn />} />
       <Route path={AppRoutes.NotFound} element={<NotFound />} />
 
-      <Route path={AppRoutes.Main} element={<ListNotes />} />
-      <Route path={AppRoutes.Notes} element={<ListNotes />}>
+      <Route path={AppRoutes.Main} element={<MainLayout />} />
+      <Route path={AppRoutes.Notes} element={<MainLayout />}>
         <Route path=':id' element={<SelectedNote />} />
       </Route>
     </Routes>

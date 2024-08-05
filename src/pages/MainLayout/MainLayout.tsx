@@ -1,11 +1,9 @@
 import { AppShell, Burger, ScrollArea } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { NavLink } from 'react-router-dom';
-import { NavLink as MantineNavlink } from '@mantine/core';
-import { AppRoutes } from '@/types/generalTypes';
+import { ListNotes } from '@/components/ListNotes';
 
-export function ListNotes() {
+export function MainLayout() {
   const [opened, { toggle, close }] = useDisclosure();
 
   const notes = [
@@ -41,20 +39,7 @@ export function ListNotes() {
 
       <AppShell.Navbar>
         <AppShell.Section grow component={ScrollArea}>
-          <ul style={{ padding: 0, margin: 0 }}>
-            {notes.map(note => (
-              <li key={note.id} style={{ listStyle: 'none' }}>
-                <MantineNavlink
-                  variant='filled'
-                  fw={'bold'}
-                  description={note.title}
-                  to={`/${AppRoutes.Notes}/${note.id}`}
-                  onClick={close}
-                  component={NavLink}
-                />
-              </li>
-            ))}
-          </ul>
+          <ListNotes notes={notes} close={close} />
         </AppShell.Section>
       </AppShell.Navbar>
 
