@@ -18,6 +18,8 @@ type NotesListItemT = {
 interface INotesContext {
   notesList: Array<NotesListItemT>;
   addNote: (title: string) => void;
+  getNoteContent: (id: string) => string;
+  setNoteContent: (id: string, newContent: string) => void;
   updateNotesList: (updatedNotesList: Array<NotesListItemT>) => void;
 }
 
@@ -49,10 +51,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
     defaultValue: [],
   });
 
-  // const [notes, setNotes] = useLocalStorage<NotesT>({
-  //   key: LocalStorageKeys.Notes,
-  //   defaultValue: {},
-  // });
+  const [notes, setNotes] = useLocalStorage<NotesT>({
+    key: LocalStorageKeys.Notes,
+    defaultValue: {},
+  });
 
   // Update notes in localStorage
   // function updateNotesInLS(id: number, updatedNote: NoteContentT) {
@@ -67,12 +69,26 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setNotesList(updatedNotesList);
   }
 
+  function getNoteContent(id: string) {
+    return localStorage.getItem(`note_${id}`) || '';
+  }
+
+  function setNoteContent(id: string, newContent: string) {
+    localStorage.setItem(`note_${id}`, newContent);
+  }
+
   // Update notesList in localStorage
   function updateNotesList(updatedNotesList: NotesListItemT[]) {
     setNotesList(updatedNotesList);
   }
 
-  const value = { notesList, updateNotesList, addNote };
+  const value = {
+    notesList,
+    updateNotesList,
+    addNote,
+    getNoteContent,
+    setNoteContent,
+  };
 
   return (
     <NotesContext.Provider value={value}>{children}</NotesContext.Provider>

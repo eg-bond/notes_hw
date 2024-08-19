@@ -1,16 +1,27 @@
 import { useParams } from 'react-router-dom';
 import { RichTextEditor } from '@mantine/tiptap';
-import { useEditor } from '@tiptap/react';
+import { Content, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
+import { useNotes } from '@/context/NotesContext';
+import { useEffect, useState } from 'react';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
+  const notesContext = useNotes();
 
-  const content = '<h2 style="text-align: center;">Some title</h2>';
+  const [content, setContent] = useState(() =>
+    notesContext?.getNoteContent(id)
+  );
+
+  useEffect(() => {
+    // setContent(notesContext?.getNoteContent(id));
+    editor?.commands.setContent(notesContext?.getNoteContent(id) as Content);
+  }, [id]);
 
   const editor = useEditor({
     extensions: [
@@ -20,8 +31,19 @@ export function SelectedNote() {
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
+    onUpdate: () => {
+      debSetNoteContent();
+    },
+    // onDestroy: () => {
+    //   notesContext?.setNoteContent(id as string, editor?.getHTML() as string);
+    // },
     content,
   });
+
+  const debSetNoteContent = useDebouncedCallback(() => {
+    console.log('deb', id);
+    notesContext?.setNoteContent(id, editor?.getHTML());
+  }, 1500);
 
   return (
     <div>
