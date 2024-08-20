@@ -1,27 +1,34 @@
 import { useParams } from 'react-router-dom';
 import { RichTextEditor } from '@mantine/tiptap';
-import { Content, useEditor } from '@tiptap/react';
+import { useEditor } from '@tiptap/react';
+import { useNotes } from '@/context/NotesContext';
+import { useEffect, useRef } from 'react';
+import { useDebouncedCallback } from '@mantine/hooks';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
-import { useNotes } from '@/context/NotesContext';
-import { useEffect, useState } from 'react';
-import { useDebouncedCallback } from '@mantine/hooks';
+import { TextEditorToolbar } from '@/components/TextEditor';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
-  const notesContext = useNotes();
+  const { getNoteContent, setNoteContent } = useNotes();
 
-  const [content, setContent] = useState(() =>
-    notesContext?.getNoteContent(id)
+  const content = getNoteContent(id);
+
+  const updateHandler = (id: string, updContent: string) => {
+    debSetNoteContent(id, updContent);
+  };
+
+  const debSetNoteContent = useDebouncedCallback(
+    (id: string, updContent: string) => {
+      setNoteContent(id, updContent);
+    },
+    1500
   );
 
-  useEffect(() => {
-    // setContent(notesContext?.getNoteContent(id));
-    editor?.commands.setContent(notesContext?.getNoteContent(id) as Content);
-  }, [id]);
+  const prevId = useRef<string | undefined>(id);
 
   const editor = useEditor({
     extensions: [
@@ -32,75 +39,25 @@ export function SelectedNote() {
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
     onUpdate: () => {
-      debSetNoteContent();
+      updateHandler(id as string, editor?.getHTML() as string);
     },
-    // onDestroy: () => {
-    //   notesContext?.setNoteContent(id as string, editor?.getHTML() as string);
-    // },
     content,
   });
 
-  const debSetNoteContent = useDebouncedCallback(() => {
-    console.log('deb', id);
-    notesContext?.setNoteContent(id, editor?.getHTML());
-  }, 1500);
+  useEffect(() => {
+    // immediately saves unsaved content of prev note in DB
+    setNoteContent(prevId.current as string, editor?.getHTML() as string);
+    prevId.current = id;
+    // sets content of current note 'id' to editors content
+    editor?.commands.setContent(getNoteContent(id));
+  }, [id]);
 
   return (
     <div>
-      {id}
       <RichTextEditor editor={editor}>
-        <RTEToolbar />
+        <TextEditorToolbar />
         <RichTextEditor.Content />
       </RichTextEditor>
     </div>
-  );
-}
-
-function RTEToolbar() {
-  return (
-    <RichTextEditor.Toolbar>
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.Bold />
-        <RichTextEditor.Italic />
-        <RichTextEditor.Underline />
-        <RichTextEditor.Strikethrough />
-        <RichTextEditor.ClearFormatting />
-        <RichTextEditor.Highlight />
-        <RichTextEditor.Code />
-      </RichTextEditor.ControlsGroup>
-
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.H1 />
-        <RichTextEditor.H2 />
-        <RichTextEditor.H3 />
-        <RichTextEditor.H4 />
-      </RichTextEditor.ControlsGroup>
-
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.Blockquote />
-        <RichTextEditor.Hr />
-        <RichTextEditor.BulletList />
-        <RichTextEditor.OrderedList />
-        <RichTextEditor.Subscript />
-        <RichTextEditor.Superscript />
-      </RichTextEditor.ControlsGroup>
-
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.Link />
-        <RichTextEditor.Unlink />
-      </RichTextEditor.ControlsGroup>
-
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.AlignLeft />
-        <RichTextEditor.AlignCenter />
-        <RichTextEditor.AlignJustify />
-        <RichTextEditor.AlignRight />
-      </RichTextEditor.ControlsGroup>
-
-      <RichTextEditor.ControlsGroup>
-        <RichTextEditor.Undo />
-        <RichTextEditor.Redo />
-      </RichTextEditor.ControlsGroup>
-    </RichTextEditor.Toolbar>
   );
 }

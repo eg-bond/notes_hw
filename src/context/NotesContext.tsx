@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 
 type NoteContentT = {
@@ -18,12 +18,12 @@ type NotesListItemT = {
 interface INotesContext {
   notesList: Array<NotesListItemT>;
   addNote: (title: string) => void;
-  getNoteContent: (id: string) => string;
+  getNoteContent: (id: string | undefined) => string;
   setNoteContent: (id: string, newContent: string) => void;
   updateNotesList: (updatedNotesList: Array<NotesListItemT>) => void;
 }
 
-const NotesContext = createContext<INotesContext | null>(null);
+const NotesContext = createContext<INotesContext>({} as INotesContext);
 
 export function useNotes() {
   return useContext(NotesContext);
@@ -51,16 +51,10 @@ export function NotesProvider({ children }: INotesProviderProps) {
     defaultValue: [],
   });
 
-  const [notes, setNotes] = useLocalStorage<NotesT>({
-    key: LocalStorageKeys.Notes,
-    defaultValue: {},
-  });
-
-  // Update notes in localStorage
-  // function updateNotesInLS(id: number, updatedNote: NoteContentT) {
-
-  //   setNotes((prev) => {...prev, notes[id]: updatedNote} );
-  // }
+  // const [notes, setNotes] = useLocalStorage<NotesT>({
+  //   key: LocalStorageKeys.Notes,
+  //   defaultValue: {},
+  // });
 
   // add note function
   function addNote(title: string) {
@@ -69,7 +63,8 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setNotesList(updatedNotesList);
   }
 
-  function getNoteContent(id: string) {
+  function getNoteContent(id: string | undefined) {
+    if (!id) return '';
     return localStorage.getItem(`note_${id}`) || '';
   }
 
