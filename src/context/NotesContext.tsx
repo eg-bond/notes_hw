@@ -59,8 +59,11 @@ export function NotesProvider({ children }: INotesProviderProps) {
   // add note function
   function addNote(title: string) {
     const updatedNotesList = [...notesList, { id: idCounter + 1, title }];
-    setIdCounter(idCounter + 1);
+    const nextNoteId = idCounter + 1;
+
+    setIdCounter(nextNoteId);
     setNotesList(updatedNotesList);
+    setNoteContent(nextNoteId.toString(), '');
   }
 
   function getNoteContent(id: string | undefined) {
