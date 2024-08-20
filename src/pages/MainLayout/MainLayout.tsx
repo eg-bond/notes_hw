@@ -16,7 +16,6 @@ export function MainLayout() {
       }}>
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} size='sm' />
-        <div>Logo</div>
       </AppShell.Header>
 
       <AppShell.Navbar>

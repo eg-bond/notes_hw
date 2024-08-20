@@ -18,6 +18,7 @@ type NotesListItemT = {
 interface INotesContext {
   notesList: Array<NotesListItemT>;
   addNote: (title: string) => void;
+  deleteNote: (id: string) => void;
   getNoteContent: (id: string | undefined) => string;
   setNoteContent: (id: string, newContent: string) => void;
   updateNotesList: (updatedNotesList: Array<NotesListItemT>) => void;
@@ -66,6 +67,16 @@ export function NotesProvider({ children }: INotesProviderProps) {
     setNoteContent(nextNoteId.toString(), '');
   }
 
+  function deleteNote(id: string) {
+    const updatedNotesList = notesList.filter(
+      note => note.id.toString() !== id
+    );
+    console.log(updatedNotesList);
+
+    setNotesList(updatedNotesList);
+    localStorage.removeItem(`note_${id}`);
+  }
+
   function getNoteContent(id: string | undefined) {
     if (!id) return '';
     return localStorage.getItem(`note_${id}`) || '';
@@ -84,6 +95,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     notesList,
     updateNotesList,
     addNote,
+    deleteNote,
     getNoteContent,
     setNoteContent,
   };

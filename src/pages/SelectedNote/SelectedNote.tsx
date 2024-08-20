@@ -1,8 +1,8 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RichTextEditor } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import { useNotes } from '@/context/NotesContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '@mantine/hooks';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
@@ -10,10 +10,12 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import { TextEditorToolbar } from '@/components/TextEditor';
+import { Button } from '@mantine/core';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
-  const { getNoteContent, setNoteContent } = useNotes();
+  const navigate = useNavigate();
+  const { notesList, getNoteContent, setNoteContent, deleteNote } = useNotes();
 
   const content = getNoteContent(id);
 
@@ -27,6 +29,15 @@ export function SelectedNote() {
     },
     1500
   );
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const deleteNoteHandler = (id: string) => {
+    setIsDeleting(true);
+    deleteNote(id);
+    navigate('/notes/1');
+    setIsDeleting(false);
+  };
 
   const prevId = useRef<string | undefined>(id);
 
@@ -46,14 +57,21 @@ export function SelectedNote() {
 
   useEffect(() => {
     // immediately saves unsaved content of prev note in DB
-    setNoteContent(prevId.current as string, editor?.getHTML() as string);
-    prevId.current = id;
+    if (!isDeleting) {
+      console.log('i am in setNote');
+
+      setNoteContent(prevId.current as string, editor?.getHTML() as string);
+      prevId.current = id;
+    }
     // sets content of current note 'id' to editors content
     editor?.commands.setContent(getNoteContent(id));
   }, [id]);
 
   return (
     <div>
+      <Button color='red' onClick={() => deleteNoteHandler(id)}>
+        Delete note
+      </Button>
       <RichTextEditor editor={editor}>
         <TextEditorToolbar />
         <RichTextEditor.Content />

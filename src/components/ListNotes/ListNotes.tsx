@@ -1,6 +1,6 @@
 import { useNotes } from '@/context/NotesContext';
 import { AppRoutes } from '@/types/generalTypes';
-import { Input, NavLink as MantineNavlink } from '@mantine/core';
+import { Input, NavLink as MantineNavlink, Transition } from '@mantine/core';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import { useState } from 'react';
@@ -33,16 +33,7 @@ export function ListNotes({ close }: IListNotesProps) {
     <div>
       <ul style={{ padding: 0, margin: 0 }}>
         {notesList.map(note => (
-          <li key={note.id} style={{ listStyle: 'none' }}>
-            <MantineNavlink
-              variant='filled'
-              fw={'bold'}
-              description={note.title}
-              to={`/${AppRoutes.Notes}/${note.id}`}
-              onClick={close}
-              component={NavLink}
-            />
-          </li>
+          <NoteLink note={note} key={note.id} />
         ))}
       </ul>
       {input ? (
@@ -67,5 +58,20 @@ export function ListNotes({ close }: IListNotesProps) {
         </Button>
       )}
     </div>
+  );
+}
+
+function NoteLink({ note }) {
+  return (
+    <li style={{ listStyle: 'none' }}>
+      <MantineNavlink
+        variant='filled'
+        fw={'bold'}
+        description={note.title}
+        to={`/${AppRoutes.Notes}/${note.id}`}
+        onClick={close}
+        component={NavLink}
+      />
+    </li>
   );
 }
