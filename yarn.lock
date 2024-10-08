@@ -233,6 +233,18 @@
   resolved "https://registry.yarnpkg.com/@mantine/modals/-/modals-7.13.2.tgz#42209ecba62f431c6dc4d99c7b04b1b43dd96315"
   integrity sha512-rKkXss1ZYAbkSi9ZcUsBY/HyGjgKk+bT8TXzLoClBRgg6uyto+/2lT9M5e4Nao+2PsjsRnWI/ZgddNZKiSaNgQ==
 
+"@mantine/spotlight@^7.13.2":
+  version "7.13.2"
+  resolved "https://registry.yarnpkg.com/@mantine/spotlight/-/spotlight-7.13.2.tgz#e4779b1f934441c99814bb61d39653ad9cdb4755"
+  integrity sha512-n8MapJHAJOCjrny4Yiy/SwAZOsa27X/JCGZ4rNwugvduliTa0WLT1KxjSg6Ne7Ys5iu4BlE5KEL6t3/LYDMI6g==
+  dependencies:
+    "@mantine/store" "7.13.2"
+
+"@mantine/store@7.13.2":
+  version "7.13.2"
+  resolved "https://registry.yarnpkg.com/@mantine/store/-/store-7.13.2.tgz#aba23573bff42eda28716f422275929afde086c9"
+  integrity sha512-JcBGOqRynYiRWzw1rYdmViB/lfeYSec2EXVdSt4eJv+RPICsjjuqrIc3sNzfqJEGxcN4hGSlaeBriSh05K+vNQ==
+
 "@mantine/tiptap@^7.12.1":
   version "7.12.1"
   resolved "https://registry.yarnpkg.com/@mantine/tiptap/-/tiptap-7.12.1.tgz#47fd96605979f9ba65ef9a2e98deb26b4cce3230"

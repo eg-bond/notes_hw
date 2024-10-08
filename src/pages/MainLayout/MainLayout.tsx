@@ -2,6 +2,7 @@ import { AppShell, Burger, ScrollArea } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { NotesPanel } from '@/components/NotesPanel';
+import { SearchBox } from '@/components/SearchBox';
 
 export function MainLayout() {
   const [opened, { toggle, close }] = useDisclosure();
@@ -16,6 +17,7 @@ export function MainLayout() {
       }}>
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} size='sm' />
+        <SearchBox />
       </AppShell.Header>
 
       <AppShell.Navbar>
