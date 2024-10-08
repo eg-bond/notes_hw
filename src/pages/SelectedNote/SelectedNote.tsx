@@ -2,8 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { RichTextEditor } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import { useNotes } from '@/context/NotesContext';
-import { useEffect, useRef, useState } from 'react';
-import { useDebouncedCallback } from '@mantine/hooks';
+import { useEffect, useRef } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Underline from '@tiptap/extension-underline';
@@ -11,35 +10,33 @@ import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import { TextEditorToolbar } from '@/components/TextEditor';
 import { Button } from '@mantine/core';
+import { useImmediateDebouncedCallback } from '@/hooks/useImmediateDebouncedCallback';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { notesList, getNoteContent, setNoteContent, deleteNote } = useNotes();
-
-  const content = getNoteContent(id);
+  const { notesList, getNoteContentFromDB, updateNoteContentInDB, deleteNote } =
+    useNotes();
+  const isDeleting = useRef(false);
+  const content = getNoteContentFromDB(id);
 
   const updateHandler = (id: string, updContent: string) => {
-    debSetNoteContent(id, updContent);
+    debUpdateNoteContentInDB(id, updContent);
   };
 
-  const debSetNoteContent = useDebouncedCallback(
+  const debUpdateNoteContentInDB = useImmediateDebouncedCallback(
     (id: string, updContent: string) => {
-      setNoteContent(id, updContent);
+      updateNoteContentInDB(id, updContent);
     },
     1500
   );
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
   const deleteNoteHandler = (id: string) => {
-    setIsDeleting(true);
+    isDeleting.current = true;
     deleteNote(id);
     navigate('/notes/1');
-    setIsDeleting(false);
+    isDeleting.current = false;
   };
-
-  const prevId = useRef<string | undefined>(id);
 
   const editor = useEditor({
     extensions: [
@@ -57,14 +54,11 @@ export function SelectedNote() {
 
   useEffect(() => {
     // immediately saves unsaved content of prev note in DB
-    if (!isDeleting) {
-      console.log('i am in setNote');
-
-      setNoteContent(prevId.current as string, editor?.getHTML() as string);
-      prevId.current = id;
+    if (isDeleting.current === false) {
+      debUpdateNoteContentInDB.flush();
     }
     // sets content of current note 'id' to editors content
-    editor?.commands.setContent(getNoteContent(id));
+    editor?.commands.setContent(getNoteContentFromDB(id));
   }, [id]);
 
   return (
