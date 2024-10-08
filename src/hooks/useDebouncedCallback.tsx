@@ -6,9 +6,10 @@ interface DebouncedFunction<T extends (...args: any[]) => any> {
   cancel: () => void;
 }
 
-export function useImmediateDebouncedCallback<
-  T extends (...args: any[]) => any
->(callback: T, delay: number): DebouncedFunction<T> {
+export function useDebouncedCallback<T extends (...args: any[]) => any>(
+  callback: T,
+  delay: number
+): DebouncedFunction<T> {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
   const argsRef = useRef<Parameters<T> | null>(null);
