@@ -11,6 +11,7 @@ import Link from '@tiptap/extension-link';
 import { TextEditorToolbar } from '@/components/TextEditor';
 import { Button } from '@mantine/core';
 import { useImmediateDebouncedCallback } from '@/hooks/useImmediateDebouncedCallback';
+import { findNextArrElementIndex } from '@/helpers/findNextElementIndex';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
@@ -33,8 +34,20 @@ export function SelectedNote() {
 
   const deleteNoteHandler = (id: string) => {
     isDeleting.current = true;
+
+    const nextIndex = findNextArrElementIndex(
+      notesList,
+      notesList.findIndex(item => item.id === id)
+    );
+
     deleteNote(id);
-    navigate('/notes/1');
+
+    if (nextIndex !== -1) {
+      navigate(`/notes/${notesList[nextIndex].id}`);
+    } else {
+      navigate('/notes');
+    }
+
     isDeleting.current = false;
   };
 
