@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { RichTextEditor } from '@mantine/tiptap';
 import { useEditor } from '@tiptap/react';
 import { useNotes } from '@/context/NotesContext';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import Underline from '@tiptap/extension-underline';
@@ -20,6 +20,7 @@ export function SelectedNote() {
   const { notesList, getNoteContentFromDB, updateNoteContentInDB, deleteNote } =
     useNotes();
   const isDeleting = useRef(false);
+  const [editable, setEditable] = useState(false);
   const content = getNoteContentFromDB(id);
 
   const updateHandler = (id: string, updContent: string) => {
@@ -67,21 +68,33 @@ export function SelectedNote() {
   });
 
   useEffect(() => {
+    editor?.setEditable(editable);
+  }, [editable]);
+
+  useEffect(() => {
     // immediately saves unsaved content of prev note in DB
     if (isDeleting.current === false) {
       debUpdateNoteContentInDB.flush();
     }
     // sets content of current note 'id' to editors content
     editor?.commands.setContent(getNoteContentFromDB(id));
+    // sets editable to false after changing note
+    setEditable(false);
   }, [id]);
 
   return (
     <div>
+      {!editable && (
+        <Button color='orange' onClick={() => setEditable(true)}>
+          Edit note
+        </Button>
+      )}
       <Button color='red' onClick={() => deleteNoteHandler(id)}>
         Delete note
       </Button>
+
       <RichTextEditor editor={editor}>
-        <TextEditorToolbar />
+        {editable && <TextEditorToolbar />}
         <RichTextEditor.Content />
       </RichTextEditor>
     </div>
