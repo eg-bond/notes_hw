@@ -12,6 +12,7 @@
   "dependencies": {
     "@mantine/core": "^7.12.1",
     "@mantine/hooks": "^7.12.1",
+    "@mantine/modals": "^7.13.2",
     "@mantine/tiptap": "^7.12.1",
     "@tabler/icons-react": "^3.12.0",
     "@tiptap/extension-highlight": "^2.6.4",

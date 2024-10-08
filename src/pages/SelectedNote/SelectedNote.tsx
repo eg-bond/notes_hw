@@ -9,10 +9,11 @@ import Underline from '@tiptap/extension-underline';
 import TextAlign from '@tiptap/extension-text-align';
 import Link from '@tiptap/extension-link';
 import { TextEditorToolbar } from '@/components/TextEditor';
-import { Button } from '@mantine/core';
+import { Button, Modal, Text } from '@mantine/core';
 import { useImmediateDebouncedCallback } from '@/hooks/useImmediateDebouncedCallback';
 import { findNextArrElementIndex } from '@/helpers/findNextElementIndex';
 import { AppRoutes } from '@/types/generalTypes';
+import { modals } from '@mantine/modals';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
@@ -22,6 +23,18 @@ export function SelectedNote() {
   const isDeleting = useRef(false);
   const [editable, setEditable] = useState(false);
   const content = getNoteContentFromDB(id);
+
+  const openDeleteModal = () =>
+    modals.openConfirmModal({
+      title: 'Delete note',
+      centered: true,
+      children: (
+        <Text size='sm'>Are you sure you want to delete this note?</Text>
+      ),
+      labels: { confirm: 'Delete it', cancel: "No don't delete it" },
+      confirmProps: { color: 'red' },
+      onConfirm: () => deleteNoteHandler(id),
+    });
 
   const updateHandler = (id: string, updContent: string) => {
     debUpdateNoteContentInDB(id, updContent);
@@ -89,7 +102,7 @@ export function SelectedNote() {
           Edit note
         </Button>
       )}
-      <Button color='red' onClick={() => deleteNoteHandler(id)}>
+      <Button color='red' onClick={openDeleteModal}>
         Delete note
       </Button>
 
