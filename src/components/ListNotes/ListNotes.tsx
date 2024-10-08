@@ -1,7 +1,7 @@
 import { useNotes } from '@/context/NotesContext';
 import { AppRoutes } from '@/types/generalTypes';
 import { Input, NavLink as MantineNavlink, Transition } from '@mantine/core';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { useInputState } from '@mantine/hooks';
@@ -11,6 +11,7 @@ interface IListNotesProps {
 }
 
 export function ListNotes({ close }: IListNotesProps) {
+  const navigate = useNavigate();
   const notesContext = useNotes();
   const notesList = notesContext?.notesList;
 
@@ -18,7 +19,10 @@ export function ListNotes({ close }: IListNotesProps) {
   const [inputValue, setInputValue] = useInputState('');
 
   const handleSubmit = () => {
-    notesContext?.addNote(inputValue);
+    const newNoteId = crypto.randomUUID();
+    notesContext?.addNote(newNoteId, inputValue);
+    navigate(`/${AppRoutes.Notes}/${newNoteId}`);
+
     setInputValue('');
     showInput(false);
   };

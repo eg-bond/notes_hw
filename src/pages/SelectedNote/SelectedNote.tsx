@@ -12,6 +12,7 @@ import { TextEditorToolbar } from '@/components/TextEditor';
 import { Button } from '@mantine/core';
 import { useImmediateDebouncedCallback } from '@/hooks/useImmediateDebouncedCallback';
 import { findNextArrElementIndex } from '@/helpers/findNextElementIndex';
+import { AppRoutes } from '@/types/generalTypes';
 
 export function SelectedNote() {
   const { id } = useParams<{ id: string }>();
@@ -43,9 +44,9 @@ export function SelectedNote() {
     deleteNote(id);
 
     if (nextIndex !== -1) {
-      navigate(`/notes/${notesList[nextIndex].id}`);
+      navigate(`/${AppRoutes.Notes}/${notesList[nextIndex].id}`);
     } else {
-      navigate('/notes');
+      navigate(`/${AppRoutes.Notes}`);
     }
 
     isDeleting.current = false;

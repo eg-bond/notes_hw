@@ -19,7 +19,7 @@ type NotesListItemT = {
 
 interface INotesContext {
   notesList: Array<NotesListItemT>;
-  addNote: (title: string) => void;
+  addNote: (id: randomUUID_T, title: string) => void;
   deleteNote: (id: string) => void;
   getNoteContentFromDB: (id: string | undefined) => string;
   updateNoteContentInDB: (id: string, newContent: string) => void;
@@ -49,12 +49,11 @@ export function NotesProvider({ children }: INotesProviderProps) {
     defaultValue: [],
   });
 
-  function addNote(title: string) {
-    const newNoteId = crypto.randomUUID();
-    const updatedNotesList = [...notesList, { id: newNoteId, title }];
+  function addNote(id: randomUUID_T, title: string) {
+    const updatedNotesList = [...notesList, { id, title }];
 
     setNotesList(updatedNotesList);
-    updateNoteContentInDB(newNoteId, '');
+    updateNoteContentInDB(id, '');
   }
 
   function deleteNote(id: string) {
