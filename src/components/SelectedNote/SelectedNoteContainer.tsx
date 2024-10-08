@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEditor } from '@tiptap/react';
-import { useNotes } from '@/context/NotesContext';
+import { useNotesContext } from '@/context/NotesContext';
 import { useEffect, useRef, useState } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
@@ -17,7 +17,7 @@ export function SelectedNoteContainer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { notesList, getNoteContentFromDB, updateNoteContentInDB, deleteNote } =
-    useNotes();
+    useNotesContext();
   const [editable, setEditable] = useState(false);
   const isDeleting = useRef(false);
 

@@ -1,7 +1,7 @@
 import { AppShell, Burger, ScrollArea } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
-import { ListNotes } from '@/components/ListNotes';
+import { NotesPanel } from '@/components/NotesPanel';
 
 export function MainLayout() {
   const [opened, { toggle, close }] = useDisclosure();
@@ -20,7 +20,7 @@ export function MainLayout() {
 
       <AppShell.Navbar>
         <AppShell.Section grow component={ScrollArea}>
-          <ListNotes />
+          <NotesPanel />
         </AppShell.Section>
       </AppShell.Navbar>
 

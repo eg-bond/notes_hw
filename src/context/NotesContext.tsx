@@ -1,18 +1,9 @@
 import React, { createContext, useContext } from 'react';
 import { useLocalStorage } from '@mantine/hooks';
 
-type NoteContentT = {
-  markDown: string;
-  full: string;
-};
-
-type NotesT = {
-  [id: number]: NoteContentT;
-};
-
 type randomUUID_T = ReturnType<typeof crypto.randomUUID>;
 
-type NotesListItemT = {
+export type NotesListItemT = {
   id: randomUUID_T;
   title: string;
 };
@@ -28,7 +19,7 @@ interface INotesContext {
 
 const NotesContext = createContext<INotesContext>({} as INotesContext);
 
-export function useNotes() {
+export function useNotesContext() {
   return useContext(NotesContext);
 }
 
