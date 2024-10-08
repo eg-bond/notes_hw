@@ -25,7 +25,7 @@ export function SelectedNoteContainer() {
     (id: string, updContent: string) => {
       updateNoteContentInDB(id, updContent);
     },
-    15000
+    2000
   );
 
   const editor = useEditor({

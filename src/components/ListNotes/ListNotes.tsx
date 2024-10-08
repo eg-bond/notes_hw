@@ -1,16 +1,12 @@
 import { useNotes } from '@/context/NotesContext';
 import { AppRoutes } from '@/types/generalTypes';
-import { Input, NavLink as MantineNavlink, Transition } from '@mantine/core';
+import { Input, NavLink as MantineNavlink } from '@mantine/core';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import { useState } from 'react';
 import { useInputState } from '@mantine/hooks';
 
-interface IListNotesProps {
-  close: () => void;
-}
-
-export function ListNotes({ close }: IListNotesProps) {
+export function ListNotes() {
   const navigate = useNavigate();
   const notesContext = useNotes();
   const notesList = notesContext?.notesList;

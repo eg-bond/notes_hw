@@ -1,6 +1,6 @@
 import { MainLayout } from '@/pages/MainLayout';
 import { NotFound } from '@/pages/NotFound';
-import { SelectedNoteContainer } from '@/pages/SelectedNote/SelectedNoteContainer';
+import { SelectedNote } from '@/components/SelectedNote';
 import { SignIn } from '@/pages/SignIn';
 import { SignUp } from '@/pages/SignUp';
 import { AppRoutes } from '@/types/generalTypes';
@@ -15,7 +15,7 @@ export default function Routing() {
 
       <Route path={AppRoutes.Main} element={<MainLayout />} />
       <Route path={AppRoutes.Notes} element={<MainLayout />}>
-        <Route path=':id' element={<SelectedNoteContainer />} />
+        <Route path=':id' element={<SelectedNote />} />
       </Route>
     </Routes>
   );

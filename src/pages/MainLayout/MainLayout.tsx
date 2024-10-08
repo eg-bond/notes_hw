@@ -20,7 +20,7 @@ export function MainLayout() {
 
       <AppShell.Navbar>
         <AppShell.Section grow component={ScrollArea}>
-          <ListNotes close={close} />
+          <ListNotes />
         </AppShell.Section>
       </AppShell.Navbar>
 
