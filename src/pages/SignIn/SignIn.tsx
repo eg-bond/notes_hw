@@ -15,8 +15,17 @@ export function SignIn() {
 
     const formData = new FormData(e.currentTarget);
     const username = formData.get('username') as string;
+    const pass = formData.get('pass') as string;
 
-    auth?.signIn(username, () => navigate(from, { replace: true }));
+    const registeredUsers = JSON.parse(
+      localStorage.getItem('registered') || '{}'
+    );
+
+    if (registeredUsers[username] === pass) {
+      auth?.signIn(username, () => navigate(from, { replace: true }));
+    } else {
+      console.log('Nickname or password is incorrect');
+    }
   };
 
   return (
@@ -33,7 +42,7 @@ export function SignIn() {
       <TextInput
         style={{ marginTop: '1rem' }}
         type='text'
-        name='password'
+        name='pass'
         label='Пароль'
         placeholder='Вообще можно и не вводить))'
         size='md'

@@ -21,9 +21,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     localStorage.getItem('username')
   );
 
-  const signIn = (newUser: string, callback: () => void) => {
-    localStorage.setItem('username', newUser);
-    setUser(newUser);
+  const signIn = (nickname: string, callback: () => void) => {
+    localStorage.setItem('username', nickname);
+    setUser(nickname);
     callback();
   };
 
