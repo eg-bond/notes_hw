@@ -28,7 +28,8 @@ export const AuthStatus = () => {
   }
 
   return (
-    <Flex rowGap='sm' direction={'column'} justify='center' align='flex-end'>
+    <Flex>
+      {/* <Flex rowGap='sm' direction={'column'} justify='center' align='flex-end'> */}
       {/* if user is logged in */}
       {auth?.user && (
         <>
