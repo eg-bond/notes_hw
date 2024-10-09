@@ -5,15 +5,18 @@ import { ModalsProvider } from '@mantine/modals';
 import '@mantine/tiptap/styles.css';
 import '@mantine/core/styles.css';
 import '@mantine/spotlight/styles.css';
+import { AuthProvider } from './context/AuthProvider';
 
 function App() {
   return (
     <MantineProvider>
-      <ModalsProvider>
-        <NotesProvider>
-          <Routing />
-        </NotesProvider>
-      </ModalsProvider>
+      <AuthProvider>
+        <ModalsProvider>
+          <NotesProvider>
+            <Routing />
+          </NotesProvider>
+        </ModalsProvider>
+      </AuthProvider>
     </MantineProvider>
   );
 }
