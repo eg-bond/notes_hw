@@ -5,16 +5,24 @@ import { SignIn } from '@/pages/SignIn';
 import { SignUp } from '@/pages/SignUp';
 import { AppRoutes } from '@/types/generalTypes';
 import { Route, Routes } from 'react-router-dom';
+import { PrivateRoute } from '../PrivateRoute';
+import { WelcomePage } from '@/pages/Welcome';
 
 export default function Routing() {
   return (
     <Routes>
+      <Route path={AppRoutes.Main} element={<WelcomePage />} />
       <Route path={AppRoutes.SignUp} element={<SignUp />} />
       <Route path={AppRoutes.SignIn} element={<SignIn />} />
       <Route path={AppRoutes.NotFound} element={<NotFound />} />
 
-      <Route path={AppRoutes.Main} element={<MainLayout />} />
-      <Route path={AppRoutes.Notes} element={<MainLayout />}>
+      <Route
+        path={AppRoutes.Notes}
+        element={
+          <PrivateRoute>
+            <MainLayout />
+          </PrivateRoute>
+        }>
         <Route path=':id' element={<SelectedNote />} />
       </Route>
     </Routes>

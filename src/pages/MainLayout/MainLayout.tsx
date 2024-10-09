@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { NotesPanel } from '@/components/NotesPanel';
 import { SearchBox } from '@/components/SearchBox';
+import { AuthStatus } from '@/components/AuthStatus';
 
 export function MainLayout() {
   const [opened, { toggle, close }] = useDisclosure();
@@ -18,6 +19,7 @@ export function MainLayout() {
       <AppShell.Header>
         <Burger opened={opened} onClick={toggle} size='sm' />
         <SearchBox />
+        <AuthStatus />
       </AppShell.Header>
 
       <AppShell.Navbar>
