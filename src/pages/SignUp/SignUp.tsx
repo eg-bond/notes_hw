@@ -1,3 +1,10 @@
+import { AuthStatus } from '@/components/AuthStatus';
+
 export function SignUp() {
-  return <div>Sign Up Page</div>;
+  return (
+    <>
+      <AuthStatus />
+      <div>Sign Up Page</div>
+    </>
+  );
 }
