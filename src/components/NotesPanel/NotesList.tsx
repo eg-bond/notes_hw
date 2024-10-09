@@ -2,6 +2,7 @@ import { NotesListItemT } from '@/context/NotesContext';
 import { AppRoutes } from '@/types/generalTypes';
 import { NavLink } from 'react-router-dom';
 import { NavLink as MantineNavlink } from '@mantine/core';
+import { INITIAL_NOTE_TITLE } from './NotesPanel';
 
 // NotesList.tsx
 interface NotesListProps {
@@ -15,7 +16,7 @@ export const NotesList: React.FC<NotesListProps> = ({ notesList }) => (
         <MantineNavlink
           variant='filled'
           fw={'bold'}
-          description={note.title}
+          description={!note.title ? INITIAL_NOTE_TITLE : note.title}
           to={`/${AppRoutes.Notes}/${note.id}`}
           onClick={close}
           component={NavLink}

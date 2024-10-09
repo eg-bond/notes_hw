@@ -7,7 +7,7 @@ import { AppRoutes } from '@/types/generalTypes';
 import { AddNoteForm } from './AddNoteForm';
 import { NotesList } from './NotesList';
 
-const INITIAL_NOTE_TITLE = 'Без заголовка';
+export const INITIAL_NOTE_TITLE = 'Без заголовка';
 
 export function NotesPanel() {
   const navigate = useNavigate();

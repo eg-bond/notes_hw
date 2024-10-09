@@ -17,6 +17,7 @@ export const AddNoteForm: React.FC<AddNoteFormProps> = ({
     <Input
       value={inputValue}
       onChange={e => setInputValue(e.target.value)}
+      onFocus={e => e.currentTarget.select()}
       autoFocus
     />
     <Button type='submit' variant='filled' color='green'>
