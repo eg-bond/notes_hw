@@ -10,8 +10,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.11.2",
-    "@mantine/hooks": "^7.11.2",
+    "@mantine/core": "^7.12.1",
+    "@mantine/hooks": "^7.12.1",
+    "@mantine/modals": "^7.13.2",
+    "@mantine/spotlight": "^7.13.2",
+    "@mantine/tiptap": "^7.12.1",
+    "@tabler/icons-react": "^3.12.0",
+    "@tiptap/extension-highlight": "^2.6.4",
+    "@tiptap/extension-link": "^2.6.4",
+    "@tiptap/extension-text-align": "^2.6.4",
+    "@tiptap/extension-underline": "^2.6.4",
+    "@tiptap/pm": "^2.6.4",
+    "@tiptap/react": "^2.6.4",
+    "@tiptap/starter-kit": "^2.6.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1"
