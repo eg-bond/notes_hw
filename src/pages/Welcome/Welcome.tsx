@@ -3,6 +3,7 @@ import { NavLink as MantineNavlink } from '@mantine/core';
 import { AppRoutes } from '@/types/generalTypes';
 import { useAuthContext } from '@/context/AuthProvider';
 import { useEffect } from 'react';
+import { AddUser } from '@/database/AddUser';
 
 export function WelcomePage() {
   const auth = useAuthContext();
@@ -20,6 +21,7 @@ export function WelcomePage() {
 
   return (
     <div>
+      <AddUser />
       <div>
         <h1>Заметки</h1>
         <p>Ваша цифровая записная книжка</p>
