@@ -6,11 +6,14 @@ import { useInputState } from '@mantine/hooks';
 import { AppRoutes } from '@/types/generalTypes';
 import { AddNoteForm } from './AddNoteForm';
 import { NotesList } from './NotesList';
+import { useLiveQuery } from 'dexie-react-hooks';
+import { db } from '@/database/db';
 
 export const INITIAL_NOTE_TITLE = 'Без заголовка';
 
 export function NotesPanel() {
   const navigate = useNavigate();
+  // const {  addNote } = useNotesContext();
   const { notesList, addNote } = useNotesContext();
   const [isInputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useInputState(INITIAL_NOTE_TITLE);
@@ -20,7 +23,7 @@ export function NotesPanel() {
       event.preventDefault();
       const newNoteId = crypto.randomUUID();
 
-      addNote(newNoteId, inputValue);
+      addNote(inputValue);
       navigate(`/${AppRoutes.Notes}/${newNoteId}`);
       setInputValue(INITIAL_NOTE_TITLE);
       setInputVisible(false);

@@ -11,6 +11,7 @@ interface User {
 interface Note {
   id: number;
   userId: number;
+  title: string;
   content: string;
 }
 

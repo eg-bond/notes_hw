@@ -1,4 +1,4 @@
-import { RichTextEditor } from '@mantine/tiptap';
+import { RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap';
 import { TextEditorToolbar } from '@/components/TextEditor';
 import { Button, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';

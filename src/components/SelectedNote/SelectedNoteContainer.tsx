@@ -16,17 +16,21 @@ import { RichTextEditor } from '@mantine/tiptap';
 export function SelectedNoteContainer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { notesList, getNoteContentFromDB, updateNoteContentInDB, deleteNote } =
+  const { notesList, updateNoteContent, deleteNote, getNoteContentFromDB } =
     useNotesContext();
   const [editable, setEditable] = useState(false);
   const isDeleting = useRef(false);
 
   const debUpdateNoteContentInDB = useDebouncedCallback(
     (id: string, updContent: string) => {
-      updateNoteContentInDB(id, updContent);
+      updateNoteContent(+id, updContent);
     },
     2000
   );
+  // useEffect(() => {
+  //   console.log(notesList[id]);
+  // }, [id]);
+  // console.log(notesList[id]);
 
   const editor = useEditor({
     extensions: [
@@ -38,9 +42,12 @@ export function SelectedNoteContainer() {
     ],
     // event, triggered after every editor content change
     onUpdate: () => {
+      console.log('update');
+
       debUpdateNoteContentInDB(id as string, editor?.getHTML() as string);
     },
-    content: getNoteContentFromDB(id),
+    content: 'currentNoteContent',
+    // content: getNoteContentFromDB(id),
   });
 
   const deleteNoteHandler = (id: string) => {
@@ -50,7 +57,7 @@ export function SelectedNoteContainer() {
       notesList.findIndex(item => item.id === id)
     );
 
-    deleteNote(id);
+    deleteNote(+id);
 
     if (nextIndex !== -1) {
       navigate(`/${AppRoutes.Notes}/${notesList[nextIndex].id}`);
@@ -63,11 +70,15 @@ export function SelectedNoteContainer() {
   useEffect(() => {
     // immediately saves content of prev note in DB after switch to another note
     // don't do that if note is in deletion process
-    if (isDeleting.current === false) {
-      debUpdateNoteContentInDB.flush();
-    }
+    // if (isDeleting.current === false) {
+    //   debUpdateNoteContentInDB.flush();
+    // }
     // sets content of current note 'id' to editors instance content
-    editor?.commands.setContent(getNoteContentFromDB(id));
+    // getNoteContentFromDB(+id).then(content =>
+    //   editor?.commands.setContent(content)
+    // );
+
+    // editor?.commands.setContent(getNoteContentFromDB(id));
     // sets editable to false after changing notes
     setEditable(false);
   }, [id]);
