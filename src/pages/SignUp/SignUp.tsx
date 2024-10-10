@@ -43,13 +43,6 @@ export function SignUp() {
         form.reset();
       }
     );
-    // const registeredUsers = JSON.parse(
-    //   localStorage.getItem('registered') || '{}'
-    // );
-    // registeredUsers[values[FormFieldNames.nickname]] =
-    //   values[FormFieldNames.pass];
-
-    // localStorage.setItem('registered', JSON.stringify(registeredUsers));
   };
 
   return (

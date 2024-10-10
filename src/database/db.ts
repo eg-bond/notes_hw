@@ -5,7 +5,7 @@ interface User {
   id: number;
   nickname: string;
   pass: string;
-  signedIn: boolean;
+  signedIn: number;
 }
 
 interface Note {

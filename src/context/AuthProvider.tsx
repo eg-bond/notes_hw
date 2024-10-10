@@ -1,5 +1,4 @@
 import { db, User } from '@/database/db';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type AuthContextT = {
@@ -24,18 +23,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
 
-  // const signedUser = useLiveQuery(() => db.users.get({ signedIn: true }));
-
-  // useEffect(() => {
-  //   if (signedUser) {
-  //     setUserId(signedUser.id);
-  //     setUser(signedUser.nickname);
-  //   }
-  // }, []);
+  useEffect(() => {
+    db.users.get({ signedIn: 1 }).then(signedUser => {
+      if (signedUser) {
+        setUserId(signedUser.id);
+        setUser(signedUser.nickname);
+      }
+    });
+  }, []);
 
   const signIn = (user: User, callback: () => void) => {
     db.users.update(user.id, {
-      signedIn: true,
+      signedIn: 1,
     });
 
     setUserId(user.id);
@@ -45,13 +44,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signUp = (nickname: string, pass: string, callback: () => void) => {
-    db.users.add({ nickname, pass, signedIn: false });
+    db.users.add({ nickname, pass, signedIn: 0 });
     callback();
   };
 
   const signOut = (callback: () => void) => {
-    db.users.update(userId, {
-      signedIn: false,
+    db.users.update(userId as number, {
+      signedIn: 0,
     });
 
     setUserId(null);

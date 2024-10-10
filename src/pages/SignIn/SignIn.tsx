@@ -1,8 +1,9 @@
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthProvider';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { Button, TextInput } from '@mantine/core';
 import { db } from '@/database/db';
+import { AppRoutes } from '@/types/generalTypes';
 
 export function SignIn() {
   const auth = useAuthContext();
@@ -10,6 +11,13 @@ export function SignIn() {
   const location: Location<{ from: string } | null> = useLocation();
 
   let from = location.state?.from || '/';
+
+  useEffect(() => {
+    // if use is already logged in redirect to '/notes'
+    if (auth?.user) {
+      navigate(`/${AppRoutes.Notes}`);
+    }
+  }, [auth?.user]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
