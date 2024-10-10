@@ -1,4 +1,5 @@
 import { AuthStatus } from '@/components/AuthStatus';
+import { useAuthContext } from '@/context/AuthProvider';
 import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
 import { hasLength, matchesField, useForm } from '@mantine/form';
 
@@ -9,6 +10,8 @@ enum FormFieldNames {
 }
 
 export function SignUp() {
+  const auth = useAuthContext();
+
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
@@ -33,13 +36,20 @@ export function SignUp() {
   });
 
   const handleSubmit = (values: typeof form.values) => {
-    const registeredUsers = JSON.parse(
-      localStorage.getItem('registered') || '{}'
+    auth?.signUp(
+      values[FormFieldNames.nickname],
+      values[FormFieldNames.pass],
+      () => {
+        form.reset();
+      }
     );
-    registeredUsers[values[FormFieldNames.nickname]] =
-      values[FormFieldNames.pass];
+    // const registeredUsers = JSON.parse(
+    //   localStorage.getItem('registered') || '{}'
+    // );
+    // registeredUsers[values[FormFieldNames.nickname]] =
+    //   values[FormFieldNames.pass];
 
-    localStorage.setItem('registered', JSON.stringify(registeredUsers));
+    // localStorage.setItem('registered', JSON.stringify(registeredUsers));
   };
 
   return (

@@ -21,7 +21,6 @@ export function WelcomePage() {
 
   return (
     <div>
-      <AddUser />
       <div>
         <h1>Заметки</h1>
         <p>Ваша цифровая записная книжка</p>
@@ -36,7 +35,7 @@ export function WelcomePage() {
       <MantineNavlink
         variant='filled'
         fw={'bold'}
-        description='Sign In'
+        description='Sign Up'
         to={`/${AppRoutes.SignUp}`}
         component={NavLink}
       />
