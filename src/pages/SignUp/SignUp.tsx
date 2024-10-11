@@ -1,7 +1,16 @@
 import { AuthStatus } from '@/components/AuthStatus';
 import { useAuthContext } from '@/context/AuthProvider';
-import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
+import {
+  Button,
+  Dialog,
+  Fieldset,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { hasLength, matchesField, useForm } from '@mantine/form';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 enum FormFieldNames {
   nickname = 'nickname',
@@ -11,6 +20,8 @@ enum FormFieldNames {
 
 export function SignUp() {
   const auth = useAuthContext();
+  // const navigate = useNavigate();
+  const [signUpSuccess, setSignUpSuccess] = useState(false);
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -41,8 +52,10 @@ export function SignUp() {
       values[FormFieldNames.pass],
       () => {
         form.reset();
+        // navigate(`${AppRoutes.Main}`);
       }
     );
+    setSignUpSuccess(true);
   };
 
   return (
@@ -73,6 +86,18 @@ export function SignUp() {
           </Button>
         </Fieldset>
       </form>
+
+      <Dialog
+        opened={signUpSuccess}
+        position={{ top: 20, right: 20 }}
+        withCloseButton
+        onClose={() => setSignUpSuccess(false)}
+        size='lg'
+        radius='md'>
+        <Text size='sm' mb='xs' fw={500}>
+          Successfull registarion!
+        </Text>
+      </Dialog>
     </>
   );
 }

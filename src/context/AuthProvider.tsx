@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 type AuthContextT = {
   user: string | null;
   userId: number | null;
+  authInit: boolean;
   signIn: (user: User, callback: () => void) => void;
   signOut: (callback: () => void) => void;
   signUp: (nickname: string, pass: string, callback: () => void) => void;
@@ -22,14 +23,18 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
+  const [authInit, setAuthInit] = useState<boolean>(false);
 
   useEffect(() => {
-    db.users.get({ signedIn: 1 }).then(signedUser => {
-      if (signedUser) {
-        setUserId(signedUser.id);
-        setUser(signedUser.nickname);
-      }
-    });
+    db.users
+      .get({ signedIn: 1 })
+      .then(signedUser => {
+        if (signedUser) {
+          setUserId(signedUser.id);
+          setUser(signedUser.nickname);
+        }
+      })
+      .then(() => setAuthInit(true));
   }, []);
 
   const signIn = (user: User, callback: () => void) => {
@@ -58,7 +63,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     callback();
   };
 
-  const value = { user, userId, signIn, signOut, signUp };
+  const value = { user, userId, authInit, signIn, signOut, signUp };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

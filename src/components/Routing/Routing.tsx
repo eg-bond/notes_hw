@@ -12,7 +12,7 @@ import { useAuthContext } from '@/context/AuthProvider';
 export default function Routing() {
   const auth = useAuthContext();
 
-  if (!auth) {
+  if (!auth?.authInit) {
     return null;
   }
 

@@ -1,16 +1,18 @@
-import { NotesListItemT, useNotesContext } from '@/context/NotesContext';
+import { useNotesContext } from '@/context/NotesContext';
+import { Note } from '@/database/db';
 import { AppRoutes } from '@/types/generalTypes';
 import { Button, rem } from '@mantine/core';
-import { Spotlight, spotlight } from '@mantine/spotlight';
+import { Spotlight, spotlight, SpotlightActionData } from '@mantine/spotlight';
 import { IconFileText, IconSearch } from '@tabler/icons-react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const makeSpotliteAction = (
-  id: NotesListItemT['id'],
-  label: NotesListItemT['title'],
+  id: Note['id'],
+  label: Note['title'],
   onClick: () => unknown
 ) => ({
-  id,
+  id: id.toString(),
   label,
   onClick,
   leftSection: (
@@ -21,10 +23,14 @@ const makeSpotliteAction = (
 export const SearchBox = () => {
   const { notesList } = useNotesContext();
   const navigate = useNavigate();
-  const actions = notesList.map(note =>
-    makeSpotliteAction(note.id, note.title, () =>
-      navigate(`/${AppRoutes.Notes}/${note.id}`)
-    )
+  const actions = useMemo(
+    () =>
+      notesList.map(note =>
+        makeSpotliteAction(note.id, note.title, () =>
+          navigate(`/${AppRoutes.Notes}/${note.id}`)
+        )
+      ),
+    [notesList]
   );
 
   return (

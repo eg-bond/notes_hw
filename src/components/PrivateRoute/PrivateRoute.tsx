@@ -14,7 +14,7 @@ export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   if (auth?.user === null) {
     return (
       <Navigate
-        to={`/${AppRoutes.SignIn}`}
+        to={`/${AppRoutes.Main}`}
         state={{ from: location.pathname }}
         replace
       />

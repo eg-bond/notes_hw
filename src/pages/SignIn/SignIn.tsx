@@ -1,4 +1,4 @@
-import { Location, useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthProvider';
 import { FormEvent, useEffect } from 'react';
 import { Button, TextInput } from '@mantine/core';
@@ -8,9 +8,6 @@ import { AppRoutes } from '@/types/generalTypes';
 export function SignIn() {
   const auth = useAuthContext();
   const navigate = useNavigate();
-  const location: Location<{ from: string } | null> = useLocation();
-
-  let from = location.state?.from || '/';
 
   useEffect(() => {
     // if use is already logged in redirect to '/notes'
@@ -34,7 +31,9 @@ export function SignIn() {
     }
 
     if (user.pass === pass) {
-      auth?.signIn(user, () => navigate(from, { replace: true }));
+      auth?.signIn(user, () =>
+        navigate(`/${AppRoutes.Notes}`, { replace: true })
+      );
     } else {
       console.log('Password is incorrect');
     }
@@ -56,7 +55,7 @@ export function SignIn() {
         type='text'
         name='pass'
         label='Пароль'
-        placeholder='Вообще можно и не вводить))'
+        placeholder='Пароль'
         size='md'
         radius='sm'
       />
