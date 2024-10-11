@@ -3,6 +3,7 @@ import { modals } from '@mantine/modals';
 import { useMemo } from 'react';
 import SimpleMdeReact from 'react-simplemde-editor';
 import SimpleMDE from 'easymde';
+import Markdown from 'marked-react';
 import 'easymde/dist/easymde.min.css';
 interface ISelectedNote {
   noteId: string;
@@ -50,12 +51,14 @@ export function SelectedNote({
         Delete note
       </Button>
 
-      {editable && (
+      {editable ? (
         <SimpleMdeReact
           value={content}
           onChange={onChange}
           options={autofocusNoSpellcheckerOptions}
         />
+      ) : (
+        <Markdown>{content}</Markdown>
       )}
     </div>
   );
