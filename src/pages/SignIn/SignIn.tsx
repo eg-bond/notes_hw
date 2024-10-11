@@ -1,7 +1,9 @@
 import { Location, useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthProvider';
-import { FormEvent } from 'react';
+import { FormEvent, useEffect } from 'react';
 import { Button, TextInput } from '@mantine/core';
+import { db } from '@/database/db';
+import { AppRoutes } from '@/types/generalTypes';
 
 export function SignIn() {
   const auth = useAuthContext();
@@ -10,21 +12,31 @@ export function SignIn() {
 
   let from = location.state?.from || '/';
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    // if use is already logged in redirect to '/notes'
+    if (auth?.user) {
+      navigate(`/${AppRoutes.Notes}`);
+    }
+  }, [auth?.user]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    const username = formData.get('username') as string;
+    const nickname = formData.get('nickname') as string;
     const pass = formData.get('pass') as string;
 
-    const registeredUsers = JSON.parse(
-      localStorage.getItem('registered') || '{}'
-    );
+    const user = await db.users.get({ nickname });
 
-    if (registeredUsers[username] === pass) {
-      auth?.signIn(username, () => navigate(from, { replace: true }));
+    if (!user) {
+      console.log('There is no such user');
+      return;
+    }
+
+    if (user.pass === pass) {
+      auth?.signIn(user, () => navigate(from, { replace: true }));
     } else {
-      console.log('Nickname or password is incorrect');
+      console.log('Password is incorrect');
     }
   };
 
@@ -33,7 +45,7 @@ export function SignIn() {
       <TextInput
         style={{ marginTop: '1rem' }}
         type='text'
-        name='username'
+        name='nickname'
         label='Логин'
         placeholder='Введите логин'
         size='md'

@@ -1,23 +1,8 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { NavLink as MantineNavlink } from '@mantine/core';
 import { AppRoutes } from '@/types/generalTypes';
-import { useAuthContext } from '@/context/AuthProvider';
-import { useEffect } from 'react';
 
 export function WelcomePage() {
-  const auth = useAuthContext();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (auth?.user) {
-      navigate(`/${AppRoutes.Notes}`);
-    }
-  }, [auth?.user]);
-
-  if (auth?.user) {
-    return null;
-  }
-
   return (
     <div>
       <div>
@@ -34,7 +19,7 @@ export function WelcomePage() {
       <MantineNavlink
         variant='filled'
         fw={'bold'}
-        description='Sign In'
+        description='Sign Up'
         to={`/${AppRoutes.SignUp}`}
         component={NavLink}
       />

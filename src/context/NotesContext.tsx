@@ -1,20 +1,14 @@
 import React, { createContext, useContext } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
-
-type randomUUID_T = ReturnType<typeof crypto.randomUUID>;
-
-export type NotesListItemT = {
-  id: randomUUID_T;
-  title: string;
-};
+import { db, Note } from '@/database/db';
+import { useAuthContext } from './AuthProvider';
+import { useLiveQuery } from 'dexie-react-hooks';
 
 interface INotesContext {
-  notesList: Array<NotesListItemT>;
-  addNote: (id: randomUUID_T, title: string) => void;
+  notesList: Array<Note>;
+  addNote: (title: string) => void;
   deleteNote: (id: string) => void;
-  getNoteContentFromDB: (id: string | undefined) => string;
-  updateNoteContentInDB: (id: string, newContent: string) => void;
-  updateNotesListInDB: (updatedNotesList: Array<NotesListItemT>) => void;
+  getNoteContentFromDB: (id: string) => Promise<string | undefined>;
+  updateNoteContent: (id: string, content: string) => void;
 }
 
 const NotesContext = createContext<INotesContext>({} as INotesContext);
@@ -27,55 +21,41 @@ interface INotesProviderProps {
   children: React.ReactNode;
 }
 
-enum LocalStorageKeys {
-  IdCounter = 'id_counter',
-  Notes = 'notes',
-  NotesList = 'notesList',
-}
-
-// Provider component
 export function NotesProvider({ children }: INotesProviderProps) {
-  const [notesList, setNotesList] = useLocalStorage<NotesListItemT[]>({
-    key: LocalStorageKeys.NotesList,
-    defaultValue: [],
-  });
+  const auth = useAuthContext();
 
-  function addNote(id: randomUUID_T, title: string) {
-    const updatedNotesList = [...notesList, { id, title }];
+  const notesList = useLiveQuery(
+    () => db.notes.where({ userId: auth?.userId || 0 }).toArray(),
+    [auth?.userId],
+    []
+  );
 
-    setNotesList(updatedNotesList);
-    updateNoteContentInDB(id, '');
+  async function addNote(title: string) {
+    const newNote = { userId: auth?.userId as number, title, content: '' };
+    return await db.notes.add(newNote);
   }
 
   function deleteNote(id: string) {
-    const updatedNotesList = notesList.filter(
-      note => note.id.toString() !== id
-    );
-
-    setNotesList(updatedNotesList);
-    localStorage.removeItem(`note_${id}`);
+    db.notes.delete(Number(id));
   }
 
-  function getNoteContentFromDB(id: string | undefined) {
-    if (!id) return '';
-    return localStorage.getItem(`note_${id}`) || '';
+  function updateNoteContent(id: string, content: string) {
+    db.notes.update(Number(id), {
+      content,
+    });
   }
 
-  function updateNoteContentInDB(id: string, newContent: string) {
-    localStorage.setItem(`note_${id}`, newContent);
-  }
-
-  function updateNotesListInDB(updatedNotesList: NotesListItemT[]) {
-    setNotesList(updatedNotesList);
+  async function getNoteContentFromDB(id: string) {
+    const note = await db.notes.get(Number(id));
+    return note?.content;
   }
 
   const value = {
     notesList,
-    updateNotesListInDB,
     addNote,
     deleteNote,
     getNoteContentFromDB,
-    updateNoteContentInDB,
+    updateNoteContent,
   };
 
   return (

@@ -16,11 +16,10 @@ export function NotesPanel() {
   const [inputValue, setInputValue] = useInputState(INITIAL_NOTE_TITLE);
 
   const handleAddNote = useCallback(
-    (event: React.FormEvent<HTMLFormElement>) => {
+    async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const newNoteId = crypto.randomUUID();
 
-      addNote(newNoteId, inputValue);
+      const newNoteId = await addNote(inputValue);
       navigate(`/${AppRoutes.Notes}/${newNoteId}`);
       setInputValue(INITIAL_NOTE_TITLE);
       setInputVisible(false);
