@@ -19,7 +19,7 @@ enum FormFieldNames {
 }
 
 export function SignUp() {
-  const auth = useAuthContext();
+  const { signUp } = useAuthContext();
   // const navigate = useNavigate();
   const [signUpSuccess, setSignUpSuccess] = useState(false);
 
@@ -32,30 +32,31 @@ export function SignUp() {
     },
     validate: {
       [FormFieldNames.nickname]: hasLength(
-        { min: 3 },
-        'Must be at least 3 characters'
+        { min: 4 },
+        'Имя пользователя должно содержать минимум 4 символа'
       ),
       [FormFieldNames.pass]: hasLength(
         { min: 6 },
-        'Must be at least 6 characters'
+        'Пароль должен содержать минимум 6 символов'
       ),
       [FormFieldNames.confirm_pass]: matchesField(
         FormFieldNames.pass,
-        'Passwords are not the same'
+        'Пароли не совпадают'
       ),
     },
   });
 
-  const handleSubmit = (values: typeof form.values) => {
-    auth?.signUp(
+  const handleSubmit = async (values: typeof form.values) => {
+    const result = await signUp(
       values[FormFieldNames.nickname],
-      values[FormFieldNames.pass],
-      () => {
-        form.reset();
-        // navigate(`${AppRoutes.Main}`);
-      }
+      values[FormFieldNames.pass]
     );
-    setSignUpSuccess(true);
+    if (result.success) {
+      form.reset();
+      setSignUpSuccess(true);
+    } else {
+      form.setFieldError(FormFieldNames.nickname, result.message);
+    }
   };
 
   return (

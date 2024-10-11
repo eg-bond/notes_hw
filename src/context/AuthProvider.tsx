@@ -1,4 +1,5 @@
 import { db, User } from '@/database/db';
+import Dexie from 'dexie';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 type AuthContextT = {
@@ -7,7 +8,19 @@ type AuthContextT = {
   authInit: boolean;
   signIn: (user: User, callback: () => void) => void;
   signOut: (callback: () => void) => void;
-  signUp: (nickname: string, pass: string, callback: () => void) => void;
+  signUp: (
+    nickname: string,
+    pass: string
+  ) => Promise<
+    | {
+        success: boolean;
+      }
+    | {
+        success: boolean;
+        message: any;
+      }
+  >;
+  // signUp: (nickname: string, pass: string, callback: () => void) => void;
 };
 
 const AuthContext = createContext<AuthContextT | null>(null);
@@ -48,9 +61,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
     callback();
   };
 
-  const signUp = (nickname: string, pass: string, callback: () => void) => {
-    db.users.add({ nickname, pass, signedIn: 0 });
-    callback();
+  const signUp = async (nickname: string, pass: string) => {
+    try {
+      await db.users.add({
+        nickname,
+        pass,
+        signedIn: 0,
+      });
+      return { success: true };
+    } catch (error) {
+      if (error instanceof Dexie.ConstraintError) {
+        return {
+          success: false,
+          message: 'Такое имя пользователя уже существует',
+        };
+      }
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
   };
 
   const signOut = (callback: () => void) => {
