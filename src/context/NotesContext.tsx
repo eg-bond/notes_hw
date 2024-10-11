@@ -1,22 +1,14 @@
-import React, { createContext, useContext, useState } from 'react';
-import { useLocalStorage } from '@mantine/hooks';
+import React, { createContext, useContext } from 'react';
 import { db, Note } from '@/database/db';
 import { useAuthContext } from './AuthProvider';
 import { useLiveQuery } from 'dexie-react-hooks';
 
-type randomUUID_T = ReturnType<typeof crypto.randomUUID>;
-
-export type NotesListItemT = {
-  id: randomUUID_T;
-  title: string;
-};
-
 interface INotesContext {
-  notesList: Array<NotesListItemT>;
+  notesList: Array<Note>;
   addNote: (title: string) => void;
-  deleteNote: (id: number) => void;
-  getNoteContentFromDB: (id: number) => Promise<string | undefined>;
-  updateNoteContent: (id: number, content: string) => void;
+  deleteNote: (id: string) => void;
+  getNoteContentFromDB: (id: string) => Promise<string | undefined>;
+  updateNoteContent: (id: string, content: string) => void;
 }
 
 const NotesContext = createContext<INotesContext>({} as INotesContext);
@@ -29,7 +21,6 @@ interface INotesProviderProps {
   children: React.ReactNode;
 }
 
-// Provider component
 export function NotesProvider({ children }: INotesProviderProps) {
   const auth = useAuthContext();
 
@@ -41,21 +32,21 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   async function addNote(title: string) {
     const newNote = { userId: auth?.userId as number, title, content: '' };
-    await db.notes.add(newNote);
+    return await db.notes.add(newNote);
   }
 
-  function deleteNote(id: number) {
-    db.notes.delete(id);
+  function deleteNote(id: string) {
+    db.notes.delete(Number(id));
   }
 
-  function updateNoteContent(id: number, content: string) {
-    db.notes.update(id, {
+  function updateNoteContent(id: string, content: string) {
+    db.notes.update(Number(id), {
       content,
     });
   }
 
-  async function getNoteContentFromDB(id: number) {
-    const note = await db.notes.get(id);
+  async function getNoteContentFromDB(id: string) {
+    const note = await db.notes.get(Number(id));
     return note?.content;
   }
 

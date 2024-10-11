@@ -23,6 +23,10 @@ export default function Routing() {
       <Route path={AppRoutes.SignIn} element={<SignIn />} />
       <Route path={AppRoutes.NotFound} element={<NotFound />} />
 
+      {/* <Route path={'test_db'} element={<TestDB />}>
+        <Route path=':id' element={<TestDB />} />
+      </Route> */}
+
       <Route
         path={AppRoutes.Notes}
         element={

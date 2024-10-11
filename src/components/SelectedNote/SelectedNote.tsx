@@ -1,17 +1,22 @@
-import { RichTextEditor, useRichTextEditorContext } from '@mantine/tiptap';
-import { TextEditorToolbar } from '@/components/TextEditor';
 import { Button, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
-
+import { useMemo } from 'react';
+import SimpleMdeReact from 'react-simplemde-editor';
+import SimpleMDE from 'easymde';
+import 'easymde/dist/easymde.min.css';
 interface ISelectedNote {
   noteId: string;
+  content: string;
   editable: boolean;
+  onChange: (value: string) => void;
   setEditable: React.Dispatch<React.SetStateAction<boolean>>;
   deleteNoteHandler: (id: string) => void;
 }
 export function SelectedNote({
   noteId,
+  content,
   editable,
+  onChange,
   setEditable,
   deleteNoteHandler,
 }: ISelectedNote) {
@@ -27,6 +32,13 @@ export function SelectedNote({
       onConfirm: () => deleteNoteHandler(noteId),
     });
 
+  const autofocusNoSpellcheckerOptions = useMemo(() => {
+    return {
+      autofocus: true,
+      spellChecker: false,
+    } as SimpleMDE.Options;
+  }, []);
+
   return (
     <div>
       {!editable && (
@@ -38,8 +50,13 @@ export function SelectedNote({
         Delete note
       </Button>
 
-      {editable && <TextEditorToolbar />}
-      <RichTextEditor.Content />
+      {editable && (
+        <SimpleMdeReact
+          value={content}
+          onChange={onChange}
+          options={autofocusNoSpellcheckerOptions}
+        />
+      )}
     </div>
   );
 }
