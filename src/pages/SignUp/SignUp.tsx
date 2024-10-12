@@ -12,7 +12,7 @@ import { hasLength, matchesField, useForm } from '@mantine/form';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-enum FormFieldNames {
+export enum FormFieldNames {
   nickname = 'nickname',
   pass = 'pass',
   confirm_pass = 'confirm_pass',
@@ -25,6 +25,7 @@ export function SignUp() {
 
   const form = useForm({
     mode: 'uncontrolled',
+    validateInputOnBlur: true,
     initialValues: {
       [FormFieldNames.nickname]: '',
       [FormFieldNames.pass]: '',

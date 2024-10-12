@@ -1,67 +1,69 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthProvider';
-import { FormEvent, useEffect } from 'react';
-import { Button, TextInput } from '@mantine/core';
-import { db } from '@/database/db';
+import { useEffect } from 'react';
+import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
 import { AppRoutes } from '@/types/generalTypes';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { FormFieldNames } from '../SignUp/SignUp';
 
 export function SignIn() {
-  const auth = useAuthContext();
+  const { signIn, user } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if use is already logged in redirect to '/notes'
-    if (auth?.user) {
+    // if user is already logged in - redirect to '/notes'
+    if (user) {
       navigate(`/${AppRoutes.Notes}`);
     }
-  }, [auth?.user]);
+  }, [user]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const form = useForm({
+    mode: 'uncontrolled',
+    validateInputOnBlur: true,
+    initialValues: {
+      [FormFieldNames.nickname]: '',
+      [FormFieldNames.pass]: '',
+    },
+    validate: {
+      [FormFieldNames.nickname]: isNotEmpty('Введите имя пользователя'),
+      [FormFieldNames.pass]: isNotEmpty('Введите пароль'),
+    },
+  });
 
-    const formData = new FormData(e.currentTarget);
-    const nickname = formData.get('nickname') as string;
-    const pass = formData.get('pass') as string;
+  const handleSubmit = async (values: typeof form.values) => {
+    const result = await signIn(
+      values[FormFieldNames.nickname],
+      values[FormFieldNames.pass]
+    );
 
-    const user = await db.users.get({ nickname });
-
-    if (!user) {
-      console.log('There is no such user');
-      return;
-    }
-
-    if (user.pass === pass) {
-      auth?.signIn(user, () =>
-        navigate(`/${AppRoutes.Notes}`, { replace: true })
-      );
+    if (result.success) {
+      form.reset();
+      navigate(`/${AppRoutes.Notes}`, { replace: true });
     } else {
-      console.log('Password is incorrect');
+      form.setFieldError(FormFieldNames.nickname, result.message);
+      form.setFieldError(FormFieldNames.pass, result.message);
     }
   };
 
   return (
-    <form style={{ margin: '0 25vw' }} onSubmit={handleSubmit}>
-      <TextInput
-        style={{ marginTop: '1rem' }}
-        type='text'
-        name='nickname'
-        label='Логин'
-        placeholder='Введите логин'
-        size='md'
-        radius='sm'
-      />
-      <TextInput
-        style={{ marginTop: '1rem' }}
-        type='text'
-        name='pass'
-        label='Пароль'
-        placeholder='Пароль'
-        size='md'
-        radius='sm'
-      />
-      <Button style={{ marginTop: '1rem' }} type='submit' variant='filled'>
-        Войти
-      </Button>
+    <form style={{ margin: '0 25vw' }} onSubmit={form.onSubmit(handleSubmit)}>
+      <Fieldset legend='Вход'>
+        <TextInput
+          {...form.getInputProps(FormFieldNames.nickname)}
+          key={form.key(FormFieldNames.nickname)}
+          label='Имя пользователя'
+          placeholder='Ваше имя пользователя'
+        />
+        <PasswordInput
+          {...form.getInputProps(FormFieldNames.pass)}
+          key={form.key(FormFieldNames.pass)}
+          label='Пароль'
+          placeholder='Введите пароль'
+        />
+        <Button style={{ marginTop: '1rem' }} type='submit' variant='filled'>
+          Войти
+        </Button>
+      </Fieldset>
     </form>
   );
 }

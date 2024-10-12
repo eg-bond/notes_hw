@@ -6,17 +6,28 @@ type AuthContextT = {
   user: string | null;
   userId: number | null;
   authInit: boolean;
-  signIn: (user: User, callback: () => void) => void;
+  signIn: (
+    nickname: string,
+    pass: string
+  ) => Promise<
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        message: any;
+      }
+  >;
   signOut: (callback: () => void) => void;
   signUp: (
     nickname: string,
     pass: string
   ) => Promise<
     | {
-        success: boolean;
+        success: true;
       }
     | {
-        success: boolean;
+        success: false;
         message: any;
       }
   >;
@@ -50,15 +61,38 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .then(() => setAuthInit(true));
   }, []);
 
-  const signIn = (user: User, callback: () => void) => {
-    db.users.update(user.id, {
-      signedIn: 1,
-    });
+  const signIn: AuthContextT['signIn'] = async (nickname, pass) => {
+    try {
+      // todo: сделать шифрование пароля
+      const user = await db.users.get({ nickname, pass });
+      if (user) {
+        await db.users.update(user.id, {
+          signedIn: 1,
+        });
+        setUserId(user.id);
+        setUser(user.nickname);
+        return { success: true };
+      } else {
+        return {
+          success: false,
+          message: 'Неверное имя пользователя или пароль',
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
 
-    setUserId(user.id);
-    setUser(user.nickname);
+    // db.users.update(user.id, {
+    //   signedIn: 1,
+    // });
 
-    callback();
+    // setUserId(user.id);
+    // setUser(user.nickname);
+
+    // callback();
   };
 
   const signUp = async (nickname: string, pass: string) => {
