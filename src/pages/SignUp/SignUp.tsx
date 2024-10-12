@@ -10,7 +10,6 @@ import {
 } from '@mantine/core';
 import { hasLength, matchesField, useForm } from '@mantine/form';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export enum FormFieldNames {
   nickname = 'nickname',

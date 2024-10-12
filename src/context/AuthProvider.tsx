@@ -1,8 +1,8 @@
-import { db, User } from '@/database/db';
+import { db } from '@/database/db';
 import Dexie from 'dexie';
 import { createContext, useContext, useEffect, useState } from 'react';
 
-type AuthContextT = {
+type IAuthContext = {
   user: string | null;
   userId: number | null;
   authInit: boolean;
@@ -18,7 +18,15 @@ type AuthContextT = {
         message: any;
       }
   >;
-  signOut: (callback: () => void) => void;
+  signOut: (callback: () => void) => Promise<
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
   signUp: (
     nickname: string,
     pass: string
@@ -28,13 +36,12 @@ type AuthContextT = {
       }
     | {
         success: false;
-        message: any;
+        message: string;
       }
   >;
-  // signUp: (nickname: string, pass: string, callback: () => void) => void;
 };
 
-const AuthContext = createContext<AuthContextT | null>(null);
+const AuthContext = createContext<IAuthContext | null>(null);
 
 export function useAuthContext() {
   return useContext(AuthContext);
@@ -61,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       .then(() => setAuthInit(true));
   }, []);
 
-  const signIn: AuthContextT['signIn'] = async (nickname, pass) => {
+  const signIn: IAuthContext['signIn'] = async (nickname, pass) => {
     try {
       // todo: сделать шифрование пароля
       const user = await db.users.get({ nickname, pass });
@@ -84,18 +91,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         message: error?.message,
       };
     }
-
-    // db.users.update(user.id, {
-    //   signedIn: 1,
-    // });
-
-    // setUserId(user.id);
-    // setUser(user.nickname);
-
-    // callback();
   };
 
-  const signUp = async (nickname: string, pass: string) => {
+  const signUp: IAuthContext['signUp'] = async (nickname, pass) => {
     try {
       await db.users.add({
         nickname,
@@ -117,14 +115,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signOut = (callback: () => void) => {
-    db.users.update(userId as number, {
-      signedIn: 0,
-    });
+  const signOut: IAuthContext['signOut'] = async callback => {
+    try {
+      db.users.update(userId as number, {
+        signedIn: 0,
+      });
 
-    setUserId(null);
-    setUser(null);
-    callback();
+      setUserId(null);
+      setUser(null);
+      callback();
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
   };
 
   const value = { user, userId, authInit, signIn, signOut, signUp };

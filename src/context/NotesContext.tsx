@@ -5,10 +5,47 @@ import { useLiveQuery } from 'dexie-react-hooks';
 
 interface INotesContext {
   notesList: Array<Note>;
-  addNote: (title: string) => void;
-  deleteNote: (id: string) => void;
-  getNoteContentFromDB: (id: string) => Promise<string | undefined>;
-  updateNoteContent: (id: string, content: string) => void;
+  addNote: (title: string) => Promise<
+    | {
+        success: true;
+        id: number;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
+  deleteNote: (id: string) => Promise<
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
+  getNoteContentFromDB: (id: string) => Promise<
+    | {
+        success: true;
+        content: string;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
+  updateNoteContent: (
+    id: string,
+    content: string
+  ) => Promise<
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
 }
 
 const NotesContext = createContext<INotesContext>({} as INotesContext);
@@ -21,6 +58,14 @@ interface INotesProviderProps {
   children: React.ReactNode;
 }
 
+const isOwner = (
+  noteOwnerId: number | undefined,
+  userId: number | null | undefined
+) => {
+  if (!noteOwnerId || !userId) return false;
+  return noteOwnerId === userId;
+};
+
 export function NotesProvider({ children }: INotesProviderProps) {
   const auth = useAuthContext();
 
@@ -30,25 +75,76 @@ export function NotesProvider({ children }: INotesProviderProps) {
     []
   );
 
-  async function addNote(title: string) {
-    const newNote = { userId: auth?.userId as number, title, content: '' };
-    return await db.notes.add(newNote);
-  }
+  const addNote: INotesContext['addNote'] = async title => {
+    try {
+      const newNote = { userId: auth?.userId as number, title, content: '' };
+      const newNoteId = await db.notes.add(newNote);
+      return { success: true, id: newNoteId };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
+  };
 
-  function deleteNote(id: string) {
-    db.notes.delete(Number(id));
-  }
+  const deleteNote: INotesContext['deleteNote'] = async id => {
+    try {
+      const note = await db.notes.get(Number(id));
+      if (isOwner(note?.userId, auth?.userId)) {
+        db.notes.delete(Number(id));
+        return { success: true };
+      } else {
+        return {
+          success: false,
+          message:
+            'Вы не являетесь владельцем этой заметки и не можете её удалить!',
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
+  };
 
-  function updateNoteContent(id: string, content: string) {
-    db.notes.update(Number(id), {
-      content,
-    });
-  }
+  const updateNoteContent: INotesContext['updateNoteContent'] = async (
+    id,
+    content
+  ) => {
+    try {
+      db.notes.update(Number(id), {
+        content,
+      });
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
+  };
 
-  async function getNoteContentFromDB(id: string) {
-    const note = await db.notes.get(Number(id));
-    return note?.content;
-  }
+  const getNoteContentFromDB: INotesContext['getNoteContentFromDB'] =
+    async id => {
+      try {
+        const note = await db.notes.get(Number(id));
+        if (isOwner(note?.userId, auth?.userId)) {
+          return { success: true, content: note?.content || '' };
+        } else {
+          return {
+            success: false,
+            message: 'Отказано в доступе',
+          };
+        }
+      } catch (error) {
+        return {
+          success: false,
+          message: error?.message,
+        };
+      }
+    };
 
   const value = {
     notesList,

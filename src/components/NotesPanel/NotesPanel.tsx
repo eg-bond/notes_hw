@@ -19,10 +19,12 @@ export function NotesPanel() {
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-      const newNoteId = await addNote(inputValue);
-      navigate(`/${AppRoutes.Notes}/${newNoteId}`);
-      setInputValue(INITIAL_NOTE_TITLE);
-      setInputVisible(false);
+      const result = await addNote(inputValue);
+      if (result.success) {
+        navigate(`/${AppRoutes.Notes}/${result.id}`);
+        setInputValue(INITIAL_NOTE_TITLE);
+        setInputVisible(false);
+      }
     },
     [inputValue, addNote, navigate, setInputValue]
   );

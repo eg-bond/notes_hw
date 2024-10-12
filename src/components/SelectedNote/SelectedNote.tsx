@@ -7,7 +7,7 @@ import Markdown from 'marked-react';
 import 'easymde/dist/easymde.min.css';
 interface ISelectedNote {
   noteId: string;
-  content: string;
+  content: string | null;
   editable: boolean;
   onChange: (value: string) => void;
   setEditable: React.Dispatch<React.SetStateAction<boolean>>;
@@ -39,6 +39,8 @@ export function SelectedNote({
       spellChecker: false,
     } as SimpleMDE.Options;
   }, []);
+
+  if (content === null) return <div>Заметки с таким id не существует!</div>;
 
   return (
     <div>

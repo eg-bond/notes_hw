@@ -11,7 +11,7 @@ export function SelectedNoteContainer() {
   const navigate = useNavigate();
   const { notesList, updateNoteContent, deleteNote, getNoteContentFromDB } =
     useNotesContext();
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState<string | null>('');
   const [editable, setEditable] = useState(false);
   const isDeleting = useRef(false);
 
@@ -30,20 +30,25 @@ export function SelectedNoteContainer() {
     [id]
   );
 
-  const deleteNoteHandler = (id: string) => {
+  const deleteNoteHandler = async (id: string) => {
     isDeleting.current = true;
     const nextNoteId = findNextNoteId(
       notesList,
       notesList.findIndex(item => item.id.toString() === id)
     );
 
-    deleteNote(id);
+    const result = await deleteNote(id);
 
-    if (nextNoteId !== -1) {
-      navigate(`/${AppRoutes.Notes}/${nextNoteId}`);
+    if (result.success) {
+      if (nextNoteId !== -1) {
+        navigate(`/${AppRoutes.Notes}/${nextNoteId}`);
+      } else {
+        navigate(`/${AppRoutes.Notes}`);
+      }
     } else {
-      navigate(`/${AppRoutes.Notes}`);
+      console.log('Error deleting note:', result.message);
     }
+
     isDeleting.current = false;
   };
 
@@ -51,11 +56,17 @@ export function SelectedNoteContainer() {
     if (isDeleting.current === false) {
       debUpdateNoteContentInDB.flush();
     }
+
     if (id) {
       getNoteContentFromDB(id).then(res => {
-        setContent(res || '');
+        if (res.success) {
+          setContent(res.content);
+        } else {
+          setContent(null);
+        }
       });
     }
+
     setEditable(false);
   }, [id]);
 
