@@ -7,12 +7,12 @@ import { AppRoutes } from '@/types/generalTypes';
 import { Route, Routes } from 'react-router-dom';
 import { PrivateRoute } from '../PrivateRoute';
 import { WelcomePage } from '@/pages/Welcome';
-import { useAuthContext } from '@/context/AuthProvider';
+import { useAuthContext } from '@/context/AuthContext';
 
 export default function Routing() {
-  const auth = useAuthContext();
+  const { authInit } = useAuthContext();
 
-  if (!auth?.authInit) {
+  if (!authInit) {
     return null;
   }
 

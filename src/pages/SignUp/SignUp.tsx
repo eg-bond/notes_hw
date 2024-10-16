@@ -1,5 +1,5 @@
 import { AuthStatus } from '@/components/AuthStatus';
-import { useAuthContext } from '@/context/AuthProvider';
+import { useAuthContext } from '@/context/AuthContext';
 import {
   Button,
   Dialog,

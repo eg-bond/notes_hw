@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { useAuthContext } from '@/context/AuthProvider';
+import { useAuthContext } from '@/context/AuthContext';
 import { Navigate, useLocation } from 'react-router-dom';
 import { AppRoutes } from '@/types/generalTypes';
 
@@ -8,10 +8,10 @@ interface PrivateRouteProps {
 }
 
 export const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const auth = useAuthContext();
+  const { user } = useAuthContext();
   const location = useLocation();
 
-  if (auth?.user === null) {
+  if (user === null) {
     return (
       <Navigate
         to={`/${AppRoutes.Main}`}

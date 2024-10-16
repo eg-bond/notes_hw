@@ -4,7 +4,7 @@ import { useNotesContext } from '@/context/NotesContext';
 import { AppRoutes } from '@/types/generalTypes';
 import { AddNoteForm } from './AddNoteForm';
 import { UseFormReturnType } from '@mantine/form';
-import { addNoteInputName, useNoteModal } from './NotesPanel';
+import { addNoteInputName } from './NotesPanel';
 
 interface IAddNoteModal {
   form: UseFormReturnType<

@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { db, Note } from '@/database/db';
-import { useAuthContext } from './AuthProvider';
+import { useAuthContext } from './AuthContext';
 import { useLiveQuery } from 'dexie-react-hooks';
 
 interface INotesContext {
@@ -60,10 +60,16 @@ interface INotesContext {
   >;
 }
 
-const NotesContext = createContext<INotesContext>({} as INotesContext);
+const NotesContext = createContext<INotesContext | null>(null);
 
 export function useNotesContext() {
-  return useContext(NotesContext);
+  const context = useContext(NotesContext);
+
+  if (!context) {
+    throw new Error('useNotesContext must be used within a NotesProvider');
+  }
+
+  return context;
 }
 
 interface INotesProviderProps {
@@ -83,13 +89,13 @@ export function NotesProvider({ children }: INotesProviderProps) {
 
   const notesList = useLiveQuery(
     () => db.notes.where({ userId: auth?.userId || 0 }).toArray(),
-    [auth?.userId],
+    [auth.userId],
     []
   );
 
   const addNote: INotesContext['addNote'] = async title => {
     try {
-      const newNote = { userId: auth?.userId as number, title, content: '' };
+      const newNote = { userId: auth.userId as number, title, content: '' };
       const newNoteId = await db.notes.add(newNote);
       return { success: true, id: newNoteId };
     } catch (error) {
@@ -103,7 +109,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
   const deleteNote: INotesContext['deleteNote'] = async id => {
     try {
       const note = await db.notes.get(Number(id));
-      if (isOwner(note?.userId, auth?.userId)) {
+      if (isOwner(note?.userId, auth.userId)) {
         db.notes.delete(Number(id));
         return { success: true };
       } else {

@@ -16,7 +16,7 @@ type IAuthContext = {
       }
     | {
         success: false;
-        message: any;
+        message: string;
       }
   >;
   signOut: (callback: () => void) => Promise<
@@ -45,7 +45,13 @@ type IAuthContext = {
 const AuthContext = createContext<IAuthContext | null>(null);
 
 export function useAuthContext() {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('useAuthContext must be used within a AuthProvider');
+  }
+
+  return context;
 }
 
 interface AuthProviderProps {

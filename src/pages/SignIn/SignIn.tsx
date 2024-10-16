@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/context/AuthProvider';
+import { useAuthContext } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
 import { AppRoutes } from '@/types/generalTypes';
