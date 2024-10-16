@@ -1,9 +1,9 @@
 import { AppRoutes } from '@/types/generalTypes';
 import { NavLink } from 'react-router-dom';
 import { NavLink as MantineNavlink, Menu, rem } from '@mantine/core';
-import { Note } from '@/database/db';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
 import { useState } from 'react';
+import { Note } from '@/types/dbTypes';
 
 interface NotesListProps {
   notesList: Note[];

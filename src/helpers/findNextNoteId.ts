@@ -1,4 +1,4 @@
-import { Note } from '@/database/db';
+import type { Note } from '@/types/dbTypes';
 
 export function findNextNoteId(array: Note[], index: number): number {
   // if it's the only element in the array return -1

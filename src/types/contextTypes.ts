@@ -1,4 +1,4 @@
-import { Note } from '@/database/db';
+import { Note } from './dbTypes';
 
 type Success<T> = {
   success: true;

@@ -1,19 +1,5 @@
-// db.ts
 import Dexie, { type EntityTable } from 'dexie';
-
-interface User {
-  id: number;
-  nickname: string;
-  hashedPass: string;
-  signedIn: number;
-}
-
-interface Note {
-  id: number;
-  userId: number;
-  title: string;
-  content: string;
-}
+import type { Note, User } from '@/types/dbTypes';
 
 const db = new Dexie('NotesDB') as Dexie & {
   // primary key "id" (for the typings only)
@@ -28,5 +14,4 @@ db.version(3).stores({
   notes: '++id, userId',
 });
 
-export type { User, Note };
 export { db };
