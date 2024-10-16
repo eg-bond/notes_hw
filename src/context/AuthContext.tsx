@@ -2,45 +2,7 @@ import { db } from '@/database/db';
 import { hashPassword, verifyPassword } from '@/helpers/passHelpers';
 import Dexie from 'dexie';
 import { createContext, useContext, useEffect, useState } from 'react';
-
-type IAuthContext = {
-  user: string | null;
-  userId: number | null;
-  authInit: boolean;
-  signIn: (
-    nickname: string,
-    pass: string
-  ) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  signOut: (callback: () => void) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  signUp: (
-    nickname: string,
-    pass: string
-  ) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-};
+import type { IAuthContext, ProviderProps } from '@/types/contextTypes';
 
 const AuthContext = createContext<IAuthContext | null>(null);
 
@@ -54,11 +16,7 @@ export function useAuthContext() {
   return context;
 }
 
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: ProviderProps) {
   const [user, setUser] = useState<string | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [authInit, setAuthInit] = useState<boolean>(false);

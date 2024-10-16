@@ -1,64 +1,8 @@
-import React, { createContext, useContext } from 'react';
-import { db, Note } from '@/database/db';
+import { createContext, useContext } from 'react';
+import { db } from '@/database/db';
 import { useAuthContext } from './AuthContext';
 import { useLiveQuery } from 'dexie-react-hooks';
-
-interface INotesContext {
-  notesList: Array<Note>;
-  addNote: (title: string) => Promise<
-    | {
-        success: true;
-        id: number;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  deleteNote: (id: string) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  getNoteContentFromDB: (id: string) => Promise<
-    | {
-        success: true;
-        content: string;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  editNoteTitle: (
-    id: number,
-    title: string
-  ) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-  updateNoteContent: (
-    id: string,
-    content: string
-  ) => Promise<
-    | {
-        success: true;
-      }
-    | {
-        success: false;
-        message: string;
-      }
-  >;
-}
+import type { INotesContext, ProviderProps } from '@/types/contextTypes';
 
 const NotesContext = createContext<INotesContext | null>(null);
 
@@ -72,10 +16,6 @@ export function useNotesContext() {
   return context;
 }
 
-interface INotesProviderProps {
-  children: React.ReactNode;
-}
-
 const isOwner = (
   noteOwnerId: number | undefined,
   userId: number | null | undefined
@@ -84,7 +24,7 @@ const isOwner = (
   return noteOwnerId === userId;
 };
 
-export function NotesProvider({ children }: INotesProviderProps) {
+export function NotesProvider({ children }: ProviderProps) {
   const auth = useAuthContext();
 
   const notesList = useLiveQuery(
