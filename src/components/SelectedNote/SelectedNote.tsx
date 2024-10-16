@@ -23,12 +23,12 @@ export function SelectedNote({
 }: ISelectedNote) {
   const openDeleteModal = () =>
     modals.openConfirmModal({
-      title: 'Delete note',
+      title: 'Подтверждение удаления',
       centered: true,
       children: (
-        <Text size='sm'>Are you sure you want to delete this note?</Text>
+        <Text size='sm'>Вы уверены, что хотите удалить эту заметку?</Text>
       ),
-      labels: { confirm: 'Delete it', cancel: "No don't delete it" },
+      labels: { confirm: 'Удалить', cancel: 'Отмена' },
       confirmProps: { color: 'red' },
       onConfirm: () => deleteNoteHandler(noteId),
     });
@@ -46,11 +46,11 @@ export function SelectedNote({
     <div>
       {!editable && (
         <Button color='orange' onClick={() => setEditable(true)}>
-          Edit note
+          Редактировать заметку
         </Button>
       )}
       <Button color='red' onClick={openDeleteModal}>
-        Delete note
+        Удалить заметку
       </Button>
 
       {editable ? (

@@ -40,7 +40,7 @@ export function NotesPanel() {
         openEditNoteTitleModal={openEditNoteTitleModal}
       />
       <Button onClick={addNoteModal.open} variant='filled' color='indigo'>
-        Add note
+        Добавить заметку
       </Button>
 
       <AddNoteModal form={form} addNoteModal={addNoteModal} />

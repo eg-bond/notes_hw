@@ -12,14 +12,14 @@ export function WelcomePage() {
       <MantineNavlink
         variant='filled'
         fw={'bold'}
-        description='Sign In'
+        description='Вход'
         to={`/${AppRoutes.SignIn}`}
         component={NavLink}
       />
       <MantineNavlink
         variant='filled'
         fw={'bold'}
-        description='Sign Up'
+        description='Регистрация'
         to={`/${AppRoutes.SignUp}`}
         component={NavLink}
       />

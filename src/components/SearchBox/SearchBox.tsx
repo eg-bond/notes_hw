@@ -39,7 +39,7 @@ export const SearchBox = () => {
         onClick={spotlight.open}
         variant='default'
         leftSection={<IconSearch size={14} />}>
-        Search
+        Поиск
       </Button>
       <Spotlight
         actions={actions}
