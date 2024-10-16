@@ -7,9 +7,13 @@ import { useState } from 'react';
 
 interface NotesListProps {
   notesList: Note[];
+  openEditNoteTitleModal: (noteId: number, title: string) => void;
 }
 
-export const NotesList: React.FC<NotesListProps> = ({ notesList }) => {
+export const NotesList: React.FC<NotesListProps> = ({
+  notesList,
+  openEditNoteTitleModal,
+}) => {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
   const handleContextMenu = (event: React.MouseEvent, noteId: number) => {
@@ -40,19 +44,20 @@ export const NotesList: React.FC<NotesListProps> = ({ notesList }) => {
 
             <Menu.Dropdown>
               <Menu.Item
+                onClick={() => openEditNoteTitleModal(note.id, note.title)}
                 color='indigo'
                 leftSection={
                   <IconPencil style={{ width: rem(14), height: rem(14) }} />
                 }>
                 Изменить название
               </Menu.Item>
-              <Menu.Item
+              {/* <Menu.Item
                 color='red'
                 leftSection={
                   <IconTrash style={{ width: rem(14), height: rem(14) }} />
                 }>
                 Удалить заметку
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu.Dropdown>
           </Menu>
         </li>

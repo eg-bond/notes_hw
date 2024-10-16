@@ -34,6 +34,18 @@ interface INotesContext {
         message: string;
       }
   >;
+  editNoteTitle: (
+    id: number,
+    title: string
+  ) => Promise<
+    | {
+        success: true;
+      }
+    | {
+        success: false;
+        message: string;
+      }
+  >;
   updateNoteContent: (
     id: string,
     content: string
@@ -109,6 +121,20 @@ export function NotesProvider({ children }: INotesProviderProps) {
     }
   };
 
+  const editNoteTitle: INotesContext['editNoteTitle'] = async (id, title) => {
+    try {
+      db.notes.update(Number(id), {
+        title,
+      });
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error?.message,
+      };
+    }
+  };
+
   const updateNoteContent: INotesContext['updateNoteContent'] = async (
     id,
     content
@@ -151,6 +177,7 @@ export function NotesProvider({ children }: INotesProviderProps) {
     addNote,
     deleteNote,
     getNoteContentFromDB,
+    editNoteTitle,
     updateNoteContent,
   };
 

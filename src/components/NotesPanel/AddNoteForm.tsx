@@ -25,15 +25,15 @@ export const AddNoteForm: React.FC<AddNoteFormProps> = ({
       <TextInput
         {...form.getInputProps(addNoteInputName)}
         key={form.key(addNoteInputName)}
-        placeholder='Новая заметка'
+        placeholder='Введите название заметки'
         onFocus={e => e.currentTarget.select()}
-        autoFocus
+        data-autofocus
       />
       <Button type='submit' variant='filled' color='green'>
-        Create Note
+        Подтвердить
       </Button>
       <Button type='reset' variant='filled' color='red'>
-        Cancel
+        Отмена
       </Button>
     </form>
   );

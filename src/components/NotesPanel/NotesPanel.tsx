@@ -1,18 +1,25 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import { useNotesContext } from '@/context/NotesContext';
-import { AppRoutes } from '@/types/generalTypes';
-import { AddNoteForm } from './AddNoteForm';
 import { NotesList } from './NotesList';
 import { isNotEmpty, useForm } from '@mantine/form';
+import { AddNoteModal } from './AddNoteModal';
+import { EditNoteTitleModal } from './EditNoteTitleModal';
+import { useNoteModal } from '@/hooks/useNoteModal';
 
 export const addNoteInputName = 'add_note';
 
 export function NotesPanel() {
-  const navigate = useNavigate();
-  const { notesList, addNote } = useNotesContext();
-  const [isInputVisible, setInputVisible] = useState(false);
+  const { notesList } = useNotesContext();
+  const addNoteModal = useNoteModal();
+  const editNoteTitleModal = useNoteModal();
+  const [noteIdToEdit, setNoteIdToEdit] = useState<number>(0);
+
+  const openEditNoteTitleModal = (noteId: number, title: string) => {
+    form.setFieldValue(addNoteInputName, title);
+    editNoteTitleModal.open();
+    setNoteIdToEdit(noteId);
+  };
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -24,38 +31,25 @@ export function NotesPanel() {
     },
   });
 
-  const handleAddNote = async (values: typeof form.values) => {
-    const result = await addNote(values[addNoteInputName]);
-    if (result.success) {
-      navigate(`/${AppRoutes.Notes}/${result.id}`);
-      setInputVisible(false);
-      form.reset();
-    } else {
-      form.setFieldError('add_note', result.message);
-    }
-  };
-
   if (!notesList) return null;
 
   return (
     <div>
-      <NotesList notesList={notesList} />
-      {isInputVisible ? (
-        <AddNoteForm
-          form={form}
-          handleSubmit={handleAddNote}
-          onReset={() => {
-            setInputVisible(false), form.reset();
-          }}
-        />
-      ) : (
-        <Button
-          onClick={() => setInputVisible(true)}
-          variant='filled'
-          color='indigo'>
-          Add note
-        </Button>
-      )}
+      <NotesList
+        notesList={notesList}
+        openEditNoteTitleModal={openEditNoteTitleModal}
+      />
+      <Button onClick={addNoteModal.open} variant='filled' color='indigo'>
+        Add note
+      </Button>
+
+      <AddNoteModal form={form} addNoteModal={addNoteModal} />
+
+      <EditNoteTitleModal
+        form={form}
+        editNoteTitleModal={editNoteTitleModal}
+        noteIdToEdit={noteIdToEdit}
+      />
     </div>
   );
 }
