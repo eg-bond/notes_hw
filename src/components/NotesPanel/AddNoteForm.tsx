@@ -4,6 +4,7 @@ import { addNoteInputName } from './NotesPanel';
 
 interface AddNoteFormProps {
   handleSubmit: (values: { add_note: string }) => Promise<void>;
+  onReset: () => void;
   form: UseFormReturnType<
     {
       add_note: string;
@@ -16,10 +17,11 @@ interface AddNoteFormProps {
 
 export const AddNoteForm: React.FC<AddNoteFormProps> = ({
   handleSubmit,
+  onReset,
   form,
 }) => {
   return (
-    <form onSubmit={form.onSubmit(handleSubmit)}>
+    <form onSubmit={form.onSubmit(handleSubmit)} onReset={onReset}>
       <TextInput
         {...form.getInputProps(addNoteInputName)}
         key={form.key(addNoteInputName)}

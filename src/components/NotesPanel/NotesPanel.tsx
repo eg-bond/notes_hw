@@ -16,7 +16,6 @@ export function NotesPanel() {
 
   const form = useForm({
     mode: 'uncontrolled',
-    validateInputOnBlur: true,
     initialValues: {
       [addNoteInputName]: '',
     },
@@ -42,7 +41,13 @@ export function NotesPanel() {
     <div>
       <NotesList notesList={notesList} />
       {isInputVisible ? (
-        <AddNoteForm form={form} handleSubmit={handleAddNote} />
+        <AddNoteForm
+          form={form}
+          handleSubmit={handleAddNote}
+          onReset={() => {
+            setInputVisible(false), form.reset();
+          }}
+        />
       ) : (
         <Button
           onClick={() => setInputVisible(true)}
