@@ -1,33 +1,40 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@mantine/core';
 import { useNotesContext } from '@/context/NotesContext';
-import { useInputState } from '@mantine/hooks';
 import { AppRoutes } from '@/types/generalTypes';
 import { AddNoteForm } from './AddNoteForm';
 import { NotesList } from './NotesList';
+import { isNotEmpty, useForm } from '@mantine/form';
 
-export const INITIAL_NOTE_TITLE = 'Без заголовка';
+export const addNoteInputName = 'add_note';
 
 export function NotesPanel() {
   const navigate = useNavigate();
   const { notesList, addNote } = useNotesContext();
   const [isInputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useInputState(INITIAL_NOTE_TITLE);
 
-  const handleAddNote = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-
-      const result = await addNote(inputValue);
-      if (result.success) {
-        navigate(`/${AppRoutes.Notes}/${result.id}`);
-        setInputValue(INITIAL_NOTE_TITLE);
-        setInputVisible(false);
-      }
+  const form = useForm({
+    mode: 'uncontrolled',
+    validateInputOnBlur: true,
+    initialValues: {
+      [addNoteInputName]: '',
     },
-    [inputValue, addNote, navigate, setInputValue]
-  );
+    validate: {
+      [addNoteInputName]: isNotEmpty('Название не может быть пустым'),
+    },
+  });
+
+  const handleAddNote = async (values: typeof form.values) => {
+    const result = await addNote(values[addNoteInputName]);
+    if (result.success) {
+      navigate(`/${AppRoutes.Notes}/${result.id}`);
+      setInputVisible(false);
+      form.reset();
+    } else {
+      form.setFieldError('add_note', result.message);
+    }
+  };
 
   if (!notesList) return null;
 
@@ -35,15 +42,7 @@ export function NotesPanel() {
     <div>
       <NotesList notesList={notesList} />
       {isInputVisible ? (
-        <AddNoteForm
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          handleSubmit={handleAddNote}
-          resetForm={() => {
-            setInputValue(INITIAL_NOTE_TITLE);
-            setInputVisible(false);
-          }}
-        />
+        <AddNoteForm form={form} handleSubmit={handleAddNote} />
       ) : (
         <Button
           onClick={() => setInputVisible(true)}
