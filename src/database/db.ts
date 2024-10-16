@@ -4,7 +4,7 @@ import Dexie, { type EntityTable } from 'dexie';
 interface User {
   id: number;
   nickname: string;
-  pass: string;
+  hashedPass: string;
   signedIn: number;
 }
 
@@ -22,7 +22,7 @@ const db = new Dexie('NotesDB') as Dexie & {
 };
 
 // Schema declaration:
-db.version(2).stores({
+db.version(3).stores({
   // primary key "id" (for the runtime!)
   users: '++id, &nickname, signedIn',
   notes: '++id, userId',

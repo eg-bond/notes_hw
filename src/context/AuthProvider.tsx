@@ -1,4 +1,5 @@
 import { db } from '@/database/db';
+import { hashPassword, verifyPassword } from '@/helpers/passHelpers';
 import Dexie from 'dexie';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -71,20 +72,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn: IAuthContext['signIn'] = async (nickname, pass) => {
     try {
       // todo: сделать шифрование пароля
-      const user = await db.users.get({ nickname, pass });
-      if (user) {
-        await db.users.update(user.id, {
-          signedIn: 1,
-        });
-        setUserId(user.id);
-        setUser(user.nickname);
-        return { success: true };
-      } else {
+      const user = await db.users.get({ nickname });
+
+      if (!user) {
         return {
           success: false,
           message: 'Неверное имя пользователя или пароль',
         };
       }
+
+      const isValidPassword = await verifyPassword(pass, user.hashedPass);
+
+      if (!isValidPassword) {
+        return {
+          success: false,
+          message: 'Неверное имя пользователя или пароль',
+        };
+      }
+
+      await db.users.update(user.id, {
+        signedIn: 1,
+      });
+      setUserId(user.id);
+      setUser(user.nickname);
+      return { success: true };
     } catch (error) {
       return {
         success: false,
@@ -94,10 +105,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signUp: IAuthContext['signUp'] = async (nickname, pass) => {
+    const hashedPass = await hashPassword(pass);
     try {
       await db.users.add({
         nickname,
-        pass,
+        hashedPass,
         signedIn: 0,
       });
       return { success: true };
