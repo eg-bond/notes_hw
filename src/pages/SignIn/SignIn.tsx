@@ -44,7 +44,6 @@ export function SignIn() {
       values[FormFieldNames.nickname],
       values[FormFieldNames.pass]
     );
-
     if (result.success) {
       form.reset();
       navigate(`/${AppRoutes.Notes}`, { replace: true });
@@ -53,7 +52,6 @@ export function SignIn() {
       form.setFieldError(FormFieldNames.pass, result.message);
     }
   };
-
   return (
     <Flex direction={'column'} align={'center'} gap={'lg'} mt={'20vh'}>
       <form style={{ margin: '0 25vw' }} onSubmit={form.onSubmit(handleSubmit)}>

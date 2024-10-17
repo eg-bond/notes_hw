@@ -47,6 +47,7 @@ export function SignUp() {
       values[FormFieldNames.nickname],
       values[FormFieldNames.pass]
     );
+
     if (result.success) {
       form.reset();
       await signIn(

@@ -69,7 +69,9 @@ export function AuthProvider({ children }: ProviderProps) {
   };
 
   const signUp: IAuthContext['signUp'] = async (nickname, pass) => {
-    const hashedPass = await hashPassword(pass);
+    // const hashedPass = pass;
+    const hashedPass = hashPassword(pass);
+
     try {
       await db.users.add({
         nickname,
