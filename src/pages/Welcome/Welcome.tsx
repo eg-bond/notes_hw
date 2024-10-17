@@ -1,21 +1,24 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Flex, Text } from '@mantine/core';
+import { Button, em, Flex, Text } from '@mantine/core';
 import { AppRoutes, Colors } from '@/types/generalTypes';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function WelcomePage() {
+  const isMobile = useMediaQuery(`(max-width: ${em(768)})`);
   const navigate = useNavigate();
+
   return (
     <div>
       <Flex direction={'column'} align={'center'} gap={'lg'} mt={'20vh'}>
         <Text
-          size='40px'
+          size={isMobile ? '7.5vw' : '40px'}
           fw={900}
           variant='gradient'
           gradient={{ from: 'blue', to: 'cyan', deg: 90 }}
           component='h1'>
           Заметки
         </Text>
-        <Text size='20px' fw={700}>
+        <Text size={isMobile ? '4.5vw' : '20px'} fw={700}>
           Ваша цифровая записная книжка
         </Text>
         <Flex gap={'md'} mt={'sm'}>
@@ -25,7 +28,7 @@ export function WelcomePage() {
             variant='filled'
             color={Colors.Green}
             size='xl'
-            w={'200px'}
+            w={!isMobile ? '200px' : '40vw'}
             radius={'0'}>
             Вход
           </Button>
@@ -35,7 +38,8 @@ export function WelcomePage() {
             variant='outline'
             color={Colors.Blue}
             size='xl'
-            w={'200px'}
+            p={0}
+            w={!isMobile ? '200px' : '40vw'}
             radius={'0'}>
             Регистрация
           </Button>

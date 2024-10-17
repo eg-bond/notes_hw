@@ -33,7 +33,8 @@ export function SelectedNote({
         <Text size='sm'>Вы уверены, что хотите удалить эту заметку?</Text>
       ),
       labels: { confirm: 'Удалить', cancel: 'Отмена' },
-      confirmProps: { color: 'red' },
+      confirmProps: { color: Colors.Red, radius: 0 },
+      cancelProps: { radius: 0 },
       onConfirm: () => deleteNoteHandler(noteId),
     });
 
