@@ -24,7 +24,7 @@ export const AuthStatus = () => {
       <Button
         h={'40px'}
         radius={'0'}
-        color={Colors.ExitBtn}
+        color={Colors.Red}
         onClick={handleSignOut}>
         Выйти
       </Button>
@@ -42,7 +42,7 @@ export const AuthStatus = () => {
               size='md'
               ta='end'
               truncate='end'
-              c={Colors.NoteNavlink}>
+              c={Colors.Blue}>
               {user}
             </Text>
           </Box>

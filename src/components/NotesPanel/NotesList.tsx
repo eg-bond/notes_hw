@@ -35,7 +35,7 @@ export const NotesList: React.FC<NotesListProps> = ({
                   variant='filled'
                   fw={'bold'}
                   autoContrast
-                  color={Colors.NoteNavlink}
+                  color={Colors.Blue}
                   description={note.title}
                   to={`/${AppRoutes.Notes}/${note.id}`}
                   onClick={close}

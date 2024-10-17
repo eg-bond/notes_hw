@@ -1,10 +1,13 @@
-import { Button, Text } from '@mantine/core';
+import { ActionIcon, Text, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { useMemo } from 'react';
 import SimpleMdeReact from 'react-simplemde-editor';
 import SimpleMDE from 'easymde';
 import Markdown from 'marked-react';
 import 'easymde/dist/easymde.min.css';
+import { IconEdit, IconTrashFilled } from '@tabler/icons-react';
+import { Colors } from '@/types/generalTypes';
+import './simplemdeCustomStyle.css';
 interface ISelectedNote {
   noteId: string;
   content: string | null;
@@ -13,6 +16,7 @@ interface ISelectedNote {
   setEditable: React.Dispatch<React.SetStateAction<boolean>>;
   deleteNoteHandler: (id: string) => void;
 }
+
 export function SelectedNote({
   noteId,
   content,
@@ -33,31 +37,81 @@ export function SelectedNote({
       onConfirm: () => deleteNoteHandler(noteId),
     });
 
-  const autofocusNoSpellcheckerOptions = useMemo(() => {
+  const editorOptions = useMemo(() => {
     return {
-      autofocus: true,
       spellChecker: false,
+      toolbar: [
+        'bold',
+        'italic',
+        'heading',
+        '|',
+        'quote',
+        'unordered-list',
+        'ordered-list',
+        '|',
+        'link',
+        'image',
+        '|',
+        'preview',
+        '|',
+        'guide',
+        '|',
+      ],
     } as SimpleMDE.Options;
   }, []);
 
   if (content === null) return <div>Заметки с таким id не существует!</div>;
 
   return (
-    <div>
-      {!editable && (
-        <Button color='orange' onClick={() => setEditable(true)}>
-          Редактировать заметку
-        </Button>
-      )}
-      <Button color='red' onClick={openDeleteModal}>
-        Удалить заметку
-      </Button>
+    <div style={{ position: 'relative' }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: !editable ? '0' : '10px',
+          right: '10px',
+          display: 'flex',
+          gap: '10px',
+        }}>
+        {!editable && (
+          <Tooltip
+            color={Colors.Orange}
+            position='bottom'
+            openDelay={700}
+            label='Редактировать заметку'>
+            <ActionIcon
+              onClick={() => setEditable(true)}
+              variant='filled'
+              color={Colors.Orange}
+              style={{ zIndex: 2 }}
+              aria-label='edit_note'>
+              <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+        )}
+        <Tooltip
+          color={Colors.Red}
+          position='bottom'
+          openDelay={700}
+          label='Удалить заметку'>
+          <ActionIcon
+            onClick={openDeleteModal}
+            variant='filled'
+            color={Colors.Red}
+            style={{ zIndex: 2 }}
+            aria-label='delete_note'>
+            <IconTrashFilled
+              style={{ width: '70%', height: '70%' }}
+              stroke={1.5}
+            />
+          </ActionIcon>
+        </Tooltip>
+      </div>
 
       {editable ? (
         <SimpleMdeReact
           value={content}
           onChange={onChange}
-          options={autofocusNoSpellcheckerOptions}
+          options={editorOptions}
         />
       ) : (
         <Markdown>{content}</Markdown>
