@@ -13,8 +13,8 @@ export enum Colors {
   Green = 'rgba(0, 184, 46, 1)',
 }
 
-export type NotesListT = Array<{ id: number; title: string }>;
-
-export type MainOutletCotextT = {
-  notes: NotesListT;
-};
+export enum FormFieldNames {
+  nickname = 'nickname',
+  pass = 'pass',
+  confirm_pass = 'confirm_pass',
+}

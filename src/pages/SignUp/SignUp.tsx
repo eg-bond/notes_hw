@@ -1,26 +1,19 @@
-import { AuthStatus } from '@/components/AuthStatus';
 import { useAuthContext } from '@/context/AuthContext';
+import { AppRoutes, Colors, FormFieldNames } from '@/types/generalTypes';
 import {
   Button,
-  Dialog,
   Fieldset,
+  Flex,
   PasswordInput,
   Text,
   TextInput,
 } from '@mantine/core';
 import { hasLength, matchesField, useForm } from '@mantine/form';
-import { useState } from 'react';
-
-export enum FormFieldNames {
-  nickname = 'nickname',
-  pass = 'pass',
-  confirm_pass = 'confirm_pass',
-}
+import { useNavigate } from 'react-router-dom';
 
 export function SignUp() {
-  const { signUp } = useAuthContext();
-  // const navigate = useNavigate();
-  const [signUpSuccess, setSignUpSuccess] = useState(false);
+  const { signUp, signIn } = useAuthContext();
+  const navigate = useNavigate();
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -53,7 +46,11 @@ export function SignUp() {
     );
     if (result.success) {
       form.reset();
-      setSignUpSuccess(true);
+      await signIn(
+        values[FormFieldNames.nickname],
+        values[FormFieldNames.pass]
+      );
+      navigate(`/${AppRoutes.Notes}`, { replace: true });
     } else {
       form.setFieldError(FormFieldNames.nickname, result.message);
     }
@@ -61,44 +58,50 @@ export function SignUp() {
 
   return (
     <>
-      <AuthStatus />
-      <form style={{ margin: '0 25vw' }} onSubmit={form.onSubmit(handleSubmit)}>
-        <Fieldset legend='Signing up'>
-          <TextInput
-            {...form.getInputProps(FormFieldNames.nickname)}
-            key={form.key(FormFieldNames.nickname)}
-            label='Nickname'
-            placeholder='Your nickname'
-          />
-          <PasswordInput
-            {...form.getInputProps(FormFieldNames.pass)}
-            key={form.key(FormFieldNames.pass)}
-            label='Password'
-            placeholder='Password'
-          />
-          <PasswordInput
-            {...form.getInputProps(FormFieldNames.confirm_pass)}
-            key={form.key(FormFieldNames.confirm_pass)}
-            label='Confirm password'
-            placeholder='Confirm password'
-          />
-          <Button style={{ marginTop: '1rem' }} type='submit' variant='filled'>
-            Sign Up
-          </Button>
-        </Fieldset>
-      </form>
+      <Flex direction={'column'} align={'center'} gap={'lg'} mt={'20vh'}>
+        <form onSubmit={form.onSubmit(handleSubmit)}>
+          <Fieldset legend='Регистрация' w={'650px'}>
+            <TextInput
+              {...form.getInputProps(FormFieldNames.nickname)}
+              key={form.key(FormFieldNames.nickname)}
+              label='Ваш логин'
+              placeholder='Введите логин'
+            />
+            <PasswordInput
+              {...form.getInputProps(FormFieldNames.pass)}
+              key={form.key(FormFieldNames.pass)}
+              label='Ваш пароль'
+              placeholder='Введите пароль'
+            />
+            <PasswordInput
+              {...form.getInputProps(FormFieldNames.confirm_pass)}
+              key={form.key(FormFieldNames.confirm_pass)}
+              label='Повторите пароль'
+              placeholder='Повторите пароль'
+            />
+            <Button
+              style={{ marginTop: '1rem' }}
+              type='submit'
+              variant='filled'
+              color={Colors.Blue}
+              radius={0}>
+              Зарегистрироваться
+            </Button>
+          </Fieldset>
+        </form>
 
-      <Dialog
-        opened={signUpSuccess}
-        position={{ top: 20, right: 20 }}
-        withCloseButton
-        onClose={() => setSignUpSuccess(false)}
-        size='lg'
-        radius='md'>
-        <Text size='sm' mb='xs' fw={500}>
-          Successfull registarion!
-        </Text>
-      </Dialog>
+        <Text size='20px'>Уже есть аккаунт в системе?</Text>
+        <Button
+          onClick={() => navigate('/' + AppRoutes.SignIn)}
+          justify='center'
+          variant='filled'
+          color={Colors.Green}
+          size='xl'
+          w={'200px'}
+          radius={'0'}>
+          Войти
+        </Button>
+      </Flex>
     </>
   );
 }

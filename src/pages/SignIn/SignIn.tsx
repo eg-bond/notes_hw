@@ -2,9 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { useEffect } from 'react';
 import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
-import { AppRoutes } from '@/types/generalTypes';
+import { AppRoutes, FormFieldNames } from '@/types/generalTypes';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { FormFieldNames } from '../SignUp/SignUp';
 
 export function SignIn() {
   const { signIn, user } = useAuthContext();
