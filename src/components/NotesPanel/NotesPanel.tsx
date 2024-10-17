@@ -46,7 +46,6 @@ export function NotesPanel() {
         fullWidth
         leftSection={<IconPlus />}
         variant='default'
-        mt='sm'
         radius={'0'}>
         Добавить заметку
       </Button>

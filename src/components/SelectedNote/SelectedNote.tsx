@@ -1,4 +1,4 @@
-import { ActionIcon, Text, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Text, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { useMemo } from 'react';
 import SimpleMdeReact from 'react-simplemde-editor';
@@ -114,7 +114,9 @@ export function SelectedNote({
           options={editorOptions}
         />
       ) : (
-        <Markdown>{content}</Markdown>
+        <Box ml={'md'}>
+          <Markdown>{content === '' ? 'Пустая заметка' : content}</Markdown>
+        </Box>
       )}
     </div>
   );
