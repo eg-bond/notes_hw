@@ -38,6 +38,8 @@ export const SearchBox = () => {
       <Button
         onClick={spotlight.open}
         variant='default'
+        h={'40px'}
+        radius={'0'}
         leftSection={<IconSearch size={14} />}>
         Поиск
       </Button>

@@ -1,4 +1,4 @@
-import { AppShell, Burger, ScrollArea } from '@mantine/core';
+import { AppShell, Burger, Flex, Group, ScrollArea } from '@mantine/core';
 import { Outlet } from 'react-router-dom';
 import { useDisclosure } from '@mantine/hooks';
 import { NotesPanel } from '@/components/NotesPanel';
@@ -10,20 +10,30 @@ export function MainLayout() {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: 40 }}
       navbar={{
         width: 300,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}>
-      <AppShell.Header>
-        <Burger opened={opened} onClick={toggle} size='sm' />
-        <SearchBox />
-        <AuthStatus />
+      <AppShell.Header color='blue'>
+        <Flex
+          rowGap='sm'
+          direction={'row'}
+          justify='space-between'
+          h='100%'
+          align='center'
+          wrap={'nowrap'}>
+          <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />
+          <Group wrap={'nowrap'} ml={'auto'} gap={'md'}>
+            <SearchBox />
+            <AuthStatus />
+          </Group>
+        </Flex>
       </AppShell.Header>
 
       <AppShell.Navbar>
-        <AppShell.Section grow component={ScrollArea}>
+        <AppShell.Section onClick={() => close()} grow component={ScrollArea}>
           <NotesPanel />
         </AppShell.Section>
       </AppShell.Navbar>

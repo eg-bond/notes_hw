@@ -21,27 +21,28 @@ export const AuthStatus = () => {
 
   function ExitBtn() {
     return (
-      <Button color='red' onClick={handleSignOut}>
+      <Button
+        h={'40px'}
+        radius={'0'}
+        color='rgba(242, 7, 7, 1)'
+        onClick={handleSignOut}>
         Выйти
       </Button>
     );
   }
 
   return (
-    <Flex>
-      {/* <Flex rowGap='sm' direction={'column'} justify='center' align='flex-end'> */}
+    <Flex columnGap='md' justify='center' align='flex-end'>
       {/* if user is logged in */}
       {user && (
         <>
-          <Box w={125}>
+          <Box style={{ alignSelf: 'center' }} maw={125} ta={'center'}>
             <Text
               tt='capitalize'
-              size='lg'
-              fw='bold'
+              size='md'
               ta='end'
               truncate='end'
-              variant='gradient'
-              gradient={{ from: 'grape', to: 'red', deg: 90 }}>
+              c={'rgba(38, 157, 255, 1)'}>
               {user}
             </Text>
           </Box>
