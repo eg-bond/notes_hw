@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { Box, Button, Flex, Text } from '@mantine/core';
-import { AppRoutes } from '@/types/generalTypes';
+import { AppRoutes, Colors } from '@/types/generalTypes';
 
 export const AuthStatus = () => {
   const { signOut, user } = useAuthContext();
@@ -24,7 +24,7 @@ export const AuthStatus = () => {
       <Button
         h={'40px'}
         radius={'0'}
-        color='rgba(242, 7, 7, 1)'
+        color={Colors.ExitBtn}
         onClick={handleSignOut}>
         Выйти
       </Button>
@@ -42,7 +42,7 @@ export const AuthStatus = () => {
               size='md'
               ta='end'
               truncate='end'
-              c={'rgba(38, 157, 255, 1)'}>
+              c={Colors.NoteNavlink}>
               {user}
             </Text>
           </Box>

@@ -1,4 +1,4 @@
-import { AppRoutes } from '@/types/generalTypes';
+import { AppRoutes, Colors } from '@/types/generalTypes';
 import { NavLink } from 'react-router-dom';
 import { NavLink as MantineNavlink, Menu, rem } from '@mantine/core';
 import { IconPencil, IconTrash } from '@tabler/icons-react';
@@ -34,6 +34,8 @@ export const NotesList: React.FC<NotesListProps> = ({
                 <MantineNavlink
                   variant='filled'
                   fw={'bold'}
+                  autoContrast
+                  color={Colors.NoteNavlink}
                   description={note.title}
                   to={`/${AppRoutes.Notes}/${note.id}`}
                   onClick={close}
