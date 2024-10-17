@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
-import { Navigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '@/types/generalTypes';
 
 interface PrivateRouteProps {
@@ -9,16 +9,16 @@ interface PrivateRouteProps {
 
 export const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const { user } = useAuthContext();
-  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user === null) {
+      navigate(AppRoutes.Main);
+    }
+  }, []);
 
   if (user === null) {
-    return (
-      <Navigate
-        to={`/${AppRoutes.Main}`}
-        state={{ from: location.pathname }}
-        replace
-      />
-    );
+    return null;
   }
 
   return children;
