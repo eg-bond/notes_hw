@@ -1,29 +1,15 @@
 import { useState } from 'react';
-import { Button, Flex } from '@mantine/core';
+import { Button } from '@mantine/core';
 import { useNotesContext } from '@/context/NotesContext';
 import { NotesList } from './NotesList';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { AddNoteModal } from './AddNoteModal';
 import { EditNoteTitleModal } from './EditNoteTitleModal';
 import { useNoteModal } from '@/hooks/useNoteModal';
-import { Note } from '@/types/dbTypes';
-import { Colors } from '@/types/generalTypes';
 import { IconPlus } from '@tabler/icons-react';
 
 export const addNoteInputName = 'add_note';
 
-// const makeTestNotesList = (amount: number) => {
-//   const notesList = [] as Note[];
-//   for (let i = 0; i < amount; i++) {
-//     notesList.push({
-//       id: i,
-//       userId: i,
-//       title: `Note ${i}`,
-//       content: `Content ${i}`,
-//     });
-//   }
-//   return notesList;
-// };
 export function NotesPanel() {
   const { notesList } = useNotesContext();
   const addNoteModal = useNoteModal();

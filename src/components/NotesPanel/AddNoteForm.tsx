@@ -1,6 +1,7 @@
 import { Button, TextInput } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { addNoteInputName } from './NotesPanel';
+import { Colors } from '@/types/generalTypes';
 
 interface AddNoteFormProps {
   handleSubmit: (values: { add_note: string }) => Promise<void>;
@@ -28,11 +29,12 @@ export const AddNoteForm: React.FC<AddNoteFormProps> = ({
         placeholder='Введите название заметки'
         onFocus={e => e.currentTarget.select()}
         data-autofocus
+        mb={'md'}
       />
-      <Button type='submit' variant='filled' color='green'>
+      <Button mr={'sm'} type='submit' variant='filled' color={Colors.Green}>
         Подтвердить
       </Button>
-      <Button type='reset' variant='filled' color='red'>
+      <Button type='reset' variant='filled' color={Colors.Red}>
         Отмена
       </Button>
     </form>
