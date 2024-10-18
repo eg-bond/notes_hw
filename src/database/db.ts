@@ -8,7 +8,7 @@ const db = new Dexie('NotesDB') as Dexie & {
 };
 
 // Schema declaration:
-db.version(4).stores({
+db.version(1).stores({
   // primary key "id" (for the runtime!)
   users: '++id, &nickname, signedIn',
   notes: '++id, userId',
