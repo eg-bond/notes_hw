@@ -1,10 +1,12 @@
-import { AppRoutes } from '@/types/generalTypes';
-import { Box, Button, Center, Text, Title } from '@mantine/core';
+import { AppRoutes, Styles } from '@/types/generalTypes';
+import { Box, Button, Center, em, Text, Title } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { IconFaceIdError } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 
 export function NotFound() {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
 
   return (
     <Box
@@ -20,8 +22,10 @@ export function NotFound() {
       <Center>
         <IconFaceIdError size={64} color='gray' />
       </Center>
-      <Title mt='md'>Страница не найдена</Title>
-      <Text mt='sm'>
+      <Title size={isMobile ? '6vw' : '35px'} mt='md'>
+        Страница не найдена
+      </Title>
+      <Text size={isMobile ? '2.5vw' : '16px'} mt='sm'>
         Страница, которую вы ищете, не существует или была перемещена.
       </Text>
       <Button
@@ -29,7 +33,7 @@ export function NotFound() {
         variant='outline'
         mt='lg'
         color='blue'
-        radius='md'>
+        radius={Styles.BtnRadius}>
         На главную
       </Button>
     </Box>

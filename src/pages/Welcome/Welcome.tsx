@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { Button, em, Flex, Text } from '@mantine/core';
-import { AppRoutes, Colors } from '@/types/generalTypes';
+import { AppRoutes, Colors, Styles } from '@/types/generalTypes';
 import { useMediaQuery } from '@mantine/hooks';
 
 export function WelcomePage() {
-  const isMobile = useMediaQuery(`(max-width: ${em(768)})`);
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
   const navigate = useNavigate();
 
   return (
@@ -40,7 +40,7 @@ export function WelcomePage() {
             size='xl'
             p={0}
             w={!isMobile ? '200px' : '40vw'}
-            radius={'0'}>
+            radius={Styles.BtnRadius}>
             Регистрация
           </Button>
         </Flex>

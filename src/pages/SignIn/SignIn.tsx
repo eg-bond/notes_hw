@@ -10,17 +10,22 @@ import {
   Text,
   TextInput,
 } from '@mantine/core';
-import { AppRoutes, Colors, FormFieldNames } from '@/types/generalTypes';
+import {
+  AppRoutes,
+  Colors,
+  FormFieldNames,
+  Styles,
+} from '@/types/generalTypes';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useMediaQuery } from '@mantine/hooks';
 
 export function SignIn() {
   const { signIn, user } = useAuthContext();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery(`(max-width: ${em(768)})`);
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
 
+  // if user is already logged in - redirect to '/notes'
   useEffect(() => {
-    // if user is already logged in - redirect to '/notes'
     if (user) {
       navigate(`/${AppRoutes.Notes}`);
     }
@@ -72,7 +77,7 @@ export function SignIn() {
             style={{ marginTop: '1rem' }}
             type='submit'
             variant='filled'
-            radius={0}>
+            radius={Styles.BtnRadius}>
             Войти
           </Button>
         </Fieldset>
@@ -84,7 +89,7 @@ export function SignIn() {
         variant='outline'
         color={Colors.Blue}
         size='xl'
-        radius={'0'}>
+        radius={Styles.BtnRadius}>
         Зарегистрироваться
       </Button>
     </Flex>

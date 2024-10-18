@@ -1,5 +1,10 @@
 import { useAuthContext } from '@/context/AuthContext';
-import { AppRoutes, Colors, FormFieldNames } from '@/types/generalTypes';
+import {
+  AppRoutes,
+  Colors,
+  FormFieldNames,
+  Styles,
+} from '@/types/generalTypes';
 import {
   Button,
   em,
@@ -16,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 export function SignUp() {
   const { signUp, signIn } = useAuthContext();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery(`(max-width: ${em(768)})`);
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
 
   const form = useForm({
     mode: 'uncontrolled',
@@ -87,7 +92,7 @@ export function SignUp() {
             type='submit'
             variant='filled'
             color={Colors.Blue}
-            radius={0}>
+            radius={Styles.BtnRadius}>
             Зарегистрироваться
           </Button>
         </Fieldset>
@@ -101,7 +106,7 @@ export function SignUp() {
         color={Colors.Green}
         size='xl'
         w={'200px'}
-        radius={'0'}>
+        radius={Styles.BtnRadius}>
         Войти
       </Button>
     </Flex>

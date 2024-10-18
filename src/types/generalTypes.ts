@@ -13,6 +13,11 @@ export enum Colors {
   Green = 'rgba(0, 184, 46, 1)',
 }
 
+export enum Styles {
+  BtnRadius = '0',
+  MobileWidth = 768,
+}
+
 export enum FormFieldNames {
   nickname = 'nickname',
   pass = 'pass',
