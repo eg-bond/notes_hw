@@ -8,6 +8,7 @@ import { Colors } from '@/types/generalTypes';
 import { editorOptions } from '@/helpers/editorOptions';
 import { ActionTooltip } from '../ActionTooltip';
 import './simplemdeCustomStyle.css';
+
 interface ISelectedNote {
   noteId: string;
   content: string | null;
@@ -26,6 +27,8 @@ export function SelectedNote({
   deleteNoteHandler,
 }: ISelectedNote) {
   const openDeleteModal = () =>
+    // makes
+
     modals.openConfirmModal({
       title: 'Подтверждение удаления',
       centered: true,
