@@ -11,6 +11,7 @@ export function findNextNoteId(array: Note[], index: number): number {
   return array[index + 1].id;
 }
 
+// just compares two current userId and noteOwnerId
 export const isOwner = (
   noteOwnerId: number | undefined,
   userId: number | null | undefined
