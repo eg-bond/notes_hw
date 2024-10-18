@@ -4,18 +4,12 @@ import path from 'path';
 import { manifest } from './manifest';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
       manifest,
-      strategies: 'injectManifest',
-      injectManifest: {
-        injectionPoint: undefined,
-      },
       devOptions: {
         enabled: true,
         type: 'module',
