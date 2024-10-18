@@ -16,6 +16,8 @@ export enum Colors {
 export enum Styles {
   BtnRadius = '0',
   MobileWidth = 768,
+  HeaderHeight = 40,
+  NavbarWidth = 300,
 }
 
 export enum FormFieldNames {

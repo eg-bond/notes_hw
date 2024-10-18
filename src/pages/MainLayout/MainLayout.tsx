@@ -4,15 +4,16 @@ import { useDisclosure } from '@mantine/hooks';
 import { NotesPanel } from '@/components/NotesPanel';
 import { SearchBox } from '@/components/SearchBox';
 import { AuthStatus } from '@/components/AuthStatus';
+import { Styles } from '@/types/generalTypes';
 
 export function MainLayout() {
   const [opened, { toggle, close }] = useDisclosure();
 
   return (
     <AppShell
-      header={{ height: 40 }}
+      header={{ height: Styles.HeaderHeight }}
       navbar={{
-        width: 300,
+        width: Styles.NavbarWidth,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}>
