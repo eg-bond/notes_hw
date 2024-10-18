@@ -1,12 +1,12 @@
-import { ActionIcon, Box, Text, Tooltip } from '@mantine/core';
+import { Box, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { useMemo } from 'react';
 import SimpleMdeReact from 'react-simplemde-editor';
-import SimpleMDE from 'easymde';
 import Markdown from 'marked-react';
 import 'easymde/dist/easymde.min.css';
 import { IconEdit, IconTrashFilled } from '@tabler/icons-react';
 import { Colors } from '@/types/generalTypes';
+import { editorOptions } from '@/helpers/editorOptions';
+import { ActionTooltip } from '../ActionTooltip';
 import './simplemdeCustomStyle.css';
 interface ISelectedNote {
   noteId: string;
@@ -38,30 +38,12 @@ export function SelectedNote({
       onConfirm: () => deleteNoteHandler(noteId),
     });
 
-  const editorOptions = useMemo(() => {
-    return {
-      spellChecker: false,
-      toolbar: [
-        'bold',
-        'italic',
-        'heading',
-        '|',
-        'quote',
-        'unordered-list',
-        'ordered-list',
-        '|',
-        'link',
-        'image',
-        '|',
-        'preview',
-        '|',
-        'guide',
-        '|',
-      ],
-    } as SimpleMDE.Options;
-  }, []);
-
-  if (content === null) return <div>Заметки с таким id не существует!</div>;
+  if (content === null)
+    return (
+      <Box ml={'md'} mt={'md'}>
+        Заметки с таким id не существует!
+      </Box>
+    );
 
   return (
     <div style={{ position: 'relative' }}>
@@ -74,38 +56,21 @@ export function SelectedNote({
           gap: '10px',
         }}>
         {!editable && (
-          <Tooltip
+          <ActionTooltip
+            label='Редактировать заметку'
             color={Colors.Orange}
-            position='bottom'
-            openDelay={700}
-            label='Редактировать заметку'>
-            <ActionIcon
-              onClick={() => setEditable(true)}
-              variant='filled'
-              color={Colors.Orange}
-              style={{ zIndex: 2 }}
-              aria-label='edit_note'>
-              <IconEdit style={{ width: '70%', height: '70%' }} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
+            onClick={() => setEditable(true)}
+            icon={<IconEdit />}
+            ariaLabel='edit_note'
+          />
         )}
-        <Tooltip
+        <ActionTooltip
+          label='Удалить заметку'
           color={Colors.Red}
-          position='bottom'
-          openDelay={700}
-          label='Удалить заметку'>
-          <ActionIcon
-            onClick={openDeleteModal}
-            variant='filled'
-            color={Colors.Red}
-            style={{ zIndex: 2 }}
-            aria-label='delete_note'>
-            <IconTrashFilled
-              style={{ width: '70%', height: '70%' }}
-              stroke={1.5}
-            />
-          </ActionIcon>
-        </Tooltip>
+          onClick={openDeleteModal}
+          icon={<IconTrashFilled />}
+          ariaLabel='delete_note'
+        />
       </div>
 
       {editable ? (
