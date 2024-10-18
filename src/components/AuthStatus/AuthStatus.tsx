@@ -7,8 +7,13 @@ export const AuthStatus = () => {
   const { signOut, user } = useAuthContext();
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    signOut(() => navigate(AppRoutes.Main));
+  const handleSignOut = async () => {
+    const result = await signOut();
+    if (result.success) {
+      navigate(AppRoutes.Main);
+    } else {
+      console.error(result.message);
+    }
   };
 
   function EnterBtn() {

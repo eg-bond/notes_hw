@@ -1,7 +1,7 @@
 import { AppRoutes, Colors } from '@/types/generalTypes';
 import { NavLink } from 'react-router-dom';
 import { NavLink as MantineNavlink, Menu, rem } from '@mantine/core';
-import { IconPencil, IconTrash } from '@tabler/icons-react';
+import { IconPencil } from '@tabler/icons-react';
 import { useState } from 'react';
 import { Note } from '@/types/dbTypes';
 

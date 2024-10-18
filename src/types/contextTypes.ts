@@ -25,7 +25,7 @@ export interface IAuthContext {
   userId: number | null;
   authInit: boolean;
   signIn: (nickname: string, pass: string) => Promise<Result>;
-  signOut: (callback: () => void) => Promise<Result>;
+  signOut: () => Promise<Result>;
   signUp: (nickname: string, pass: string) => Promise<Result>;
 }
 

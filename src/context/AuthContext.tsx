@@ -1,7 +1,13 @@
 import { db } from '@/database/db';
 import { hashPassword, verifyPassword } from '@/helpers/passHelpers';
 import Dexie from 'dexie';
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import type { IAuthContext, ProviderProps } from '@/types/contextTypes';
 
 const AuthContext = createContext<IAuthContext | null>(null);
@@ -21,31 +27,37 @@ export function AuthProvider({ children }: ProviderProps) {
   const [userId, setUserId] = useState<number | null>(null);
   const [authInit, setAuthInit] = useState<boolean>(false);
 
+  // looks if some user is already logged in
   useEffect(() => {
-    db.users
-      .get({ signedIn: 1 })
-      .then(signedUser => {
+    const initializeAuth = async () => {
+      try {
+        const signedUser = await db.users.get({ signedIn: 1 });
         if (signedUser) {
           setUserId(signedUser.id);
           setUser(signedUser.nickname);
         }
-      })
-      .then(() => setAuthInit(true));
+      } catch (error) {
+        console.error('Error initializing auth:', error);
+      } finally {
+        setAuthInit(true);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  const signIn: IAuthContext['signIn'] = async (nickname, pass) => {
+  const signIn: IAuthContext['signIn'] = useCallback(async (nickname, pass) => {
     try {
-      // todo: сделать шифрование пароля
-      const user = await db.users.get({ nickname });
+      const userInDB = await db.users.get({ nickname });
 
-      if (!user) {
+      if (!userInDB) {
         return {
           success: false,
           message: 'Неверное имя пользователя или пароль',
         };
       }
 
-      const isValidPassword = await verifyPassword(pass, user.hashedPass);
+      const isValidPassword = await verifyPassword(pass, userInDB.hashedPass);
 
       if (!isValidPassword) {
         return {
@@ -54,11 +66,11 @@ export function AuthProvider({ children }: ProviderProps) {
         };
       }
 
-      await db.users.update(user.id, {
+      await db.users.update(userInDB.id, {
         signedIn: 1,
       });
-      setUserId(user.id);
-      setUser(user.nickname);
+      setUserId(userInDB.id);
+      setUser(userInDB.nickname);
       return { success: true };
     } catch (error) {
       return {
@@ -66,18 +78,13 @@ export function AuthProvider({ children }: ProviderProps) {
         message: error?.message,
       };
     }
-  };
+  }, []);
 
-  const signUp: IAuthContext['signUp'] = async (nickname, pass) => {
-    // const hashedPass = pass;
+  const signUp: IAuthContext['signUp'] = useCallback(async (nickname, pass) => {
     const hashedPass = hashPassword(pass);
 
     try {
-      await db.users.add({
-        nickname,
-        hashedPass,
-        signedIn: 0,
-      });
+      await db.users.add({ nickname, hashedPass, signedIn: 0 });
       return { success: true };
     } catch (error) {
       if (error instanceof Dexie.ConstraintError) {
@@ -91,17 +98,15 @@ export function AuthProvider({ children }: ProviderProps) {
         message: error?.message,
       };
     }
-  };
+  }, []);
 
-  const signOut: IAuthContext['signOut'] = async callback => {
+  const signOut: IAuthContext['signOut'] = useCallback(async () => {
     try {
-      db.users.update(userId as number, {
-        signedIn: 0,
-      });
-
-      setUserId(null);
-      setUser(null);
-      callback();
+      if (userId) {
+        await db.users.update(userId, { signedIn: 0 });
+        setUserId(null);
+        setUser(null);
+      }
       return { success: true };
     } catch (error) {
       return {
@@ -109,7 +114,7 @@ export function AuthProvider({ children }: ProviderProps) {
         message: error?.message,
       };
     }
-  };
+  }, [userId]);
 
   const value = { user, userId, authInit, signIn, signOut, signUp };
 
