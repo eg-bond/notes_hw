@@ -1,12 +1,17 @@
-import { MantineProvider } from '@mantine/core';
+import Routing from './components/Routing/Routing';
+import { useAuthContext } from './context/AuthContext';
+import '@mantine/tiptap/styles.css';
 import '@mantine/core/styles.css';
+import '@mantine/spotlight/styles.css';
 
 function App() {
-  return (
-    <MantineProvider>
-      <div>Hello</div>
-    </MantineProvider>
-  );
+  const { authInit } = useAuthContext();
+
+  if (!authInit) {
+    return null;
+  }
+
+  return <Routing />;
 }
 
 export default App;
