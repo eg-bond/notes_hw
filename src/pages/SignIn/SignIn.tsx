@@ -1,68 +1,97 @@
-import { Location, useLocation, useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/context/AuthProvider';
-import { FormEvent, useEffect } from 'react';
-import { Button, TextInput } from '@mantine/core';
-import { db } from '@/database/db';
-import { AppRoutes } from '@/types/generalTypes';
+import { useNavigate } from 'react-router-dom';
+import { useAuthContext } from '@/context/AuthContext';
+import { useEffect } from 'react';
+import {
+  Button,
+  em,
+  Fieldset,
+  Flex,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
+import {
+  AppRoutes,
+  Colors,
+  FormFieldNames,
+  Styles,
+} from '@/types/generalTypes';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { useMediaQuery } from '@mantine/hooks';
 
 export function SignIn() {
-  const auth = useAuthContext();
+  const { signIn, user } = useAuthContext();
   const navigate = useNavigate();
-  const location: Location<{ from: string } | null> = useLocation();
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
 
-  let from = location.state?.from || '/';
-
+  // if user is already logged in - redirect to '/notes'
   useEffect(() => {
-    // if use is already logged in redirect to '/notes'
-    if (auth?.user) {
+    if (user) {
       navigate(`/${AppRoutes.Notes}`);
     }
-  }, [auth?.user]);
+  }, [user]);
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const form = useForm({
+    mode: 'uncontrolled',
+    validateInputOnBlur: true,
+    initialValues: {
+      [FormFieldNames.nickname]: '',
+      [FormFieldNames.pass]: '',
+    },
+    validate: {
+      [FormFieldNames.nickname]: isNotEmpty('Введите имя пользователя'),
+      [FormFieldNames.pass]: isNotEmpty('Введите пароль'),
+    },
+  });
 
-    const formData = new FormData(e.currentTarget);
-    const nickname = formData.get('nickname') as string;
-    const pass = formData.get('pass') as string;
-
-    const user = await db.users.get({ nickname });
-
-    if (!user) {
-      console.log('There is no such user');
-      return;
-    }
-
-    if (user.pass === pass) {
-      auth?.signIn(user, () => navigate(from, { replace: true }));
+  const handleSubmit = async (values: typeof form.values) => {
+    const result = await signIn(
+      values[FormFieldNames.nickname],
+      values[FormFieldNames.pass]
+    );
+    if (result.success) {
+      form.reset();
+      navigate(`/${AppRoutes.Notes}`, { replace: true });
     } else {
-      console.log('Password is incorrect');
+      form.setFieldError(FormFieldNames.nickname, result.message);
+      form.setFieldError(FormFieldNames.pass, result.message);
     }
   };
-
   return (
-    <form style={{ margin: '0 25vw' }} onSubmit={handleSubmit}>
-      <TextInput
-        style={{ marginTop: '1rem' }}
-        type='text'
-        name='nickname'
-        label='Логин'
-        placeholder='Введите логин'
-        size='md'
-        radius='sm'
-      />
-      <TextInput
-        style={{ marginTop: '1rem' }}
-        type='text'
-        name='pass'
-        label='Пароль'
-        placeholder='Вообще можно и не вводить))'
-        size='md'
-        radius='sm'
-      />
-      <Button style={{ marginTop: '1rem' }} type='submit' variant='filled'>
-        Войти
+    <Flex direction={'column'} align={'center'} gap={'lg'} mt={'20vh'}>
+      <form style={{ margin: '0 25vw' }} onSubmit={form.onSubmit(handleSubmit)}>
+        <Fieldset legend='Вход' w={isMobile ? '75vw' : '600px'}>
+          <TextInput
+            {...form.getInputProps(FormFieldNames.nickname)}
+            key={form.key(FormFieldNames.nickname)}
+            label='Имя пользователя'
+            placeholder='Ваше имя пользователя'
+          />
+          <PasswordInput
+            {...form.getInputProps(FormFieldNames.pass)}
+            key={form.key(FormFieldNames.pass)}
+            label='Пароль'
+            placeholder='Введите пароль'
+          />
+          <Button
+            style={{ marginTop: '1rem' }}
+            type='submit'
+            variant='filled'
+            radius={Styles.BtnRadius}>
+            Войти
+          </Button>
+        </Fieldset>
+      </form>
+      <Text size='20px'>Нет аккаунта в системе?</Text>
+      <Button
+        onClick={() => navigate('/' + AppRoutes.SignUp)}
+        justify='center'
+        variant='outline'
+        color={Colors.Blue}
+        size='xl'
+        radius={Styles.BtnRadius}>
+        Зарегистрироваться
       </Button>
-    </form>
+    </Flex>
   );
 }

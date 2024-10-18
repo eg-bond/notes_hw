@@ -1,60 +1,132 @@
-import React, { createContext, useContext } from 'react';
-import { db, Note } from '@/database/db';
-import { useAuthContext } from './AuthProvider';
+import { createContext, useCallback, useContext } from 'react';
+import { db } from '@/database/db';
+import { useAuthContext } from './AuthContext';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { isOwner } from '@/helpers/utillityHelpers';
+import type { INotesContext, ProviderProps } from '@/types/contextTypes';
 
-interface INotesContext {
-  notesList: Array<Note>;
-  addNote: (title: string) => void;
-  deleteNote: (id: string) => void;
-  getNoteContentFromDB: (id: string) => Promise<string | undefined>;
-  updateNoteContent: (id: string, content: string) => void;
-}
-
-const NotesContext = createContext<INotesContext>({} as INotesContext);
+const NotesContext = createContext<INotesContext | null>(null);
 
 export function useNotesContext() {
-  return useContext(NotesContext);
+  const context = useContext(NotesContext);
+
+  if (!context) {
+    throw new Error('useNotesContext must be used within a NotesProvider');
+  }
+
+  return context;
 }
 
-interface INotesProviderProps {
-  children: React.ReactNode;
-}
+export function NotesProvider({ children }: ProviderProps) {
+  const { userId } = useAuthContext();
 
-export function NotesProvider({ children }: INotesProviderProps) {
-  const auth = useAuthContext();
-
+  // observable live query to get notes from db
   const notesList = useLiveQuery(
-    () => db.notes.where({ userId: auth?.userId || 0 }).toArray(),
-    [auth?.userId],
+    () => db.notes.where({ userId: userId || 0 }).toArray(),
+    [userId],
     []
   );
 
-  async function addNote(title: string) {
-    const newNote = { userId: auth?.userId as number, title, content: '' };
-    return await db.notes.add(newNote);
-  }
+  const addNote: INotesContext['addNote'] = useCallback(
+    async (title: string) => {
+      try {
+        if (!userId) throw new Error('Пользователь не вошел в систему');
+        const newNote = { userId, title, content: '' };
+        const newNoteId = await db.notes.add(newNote);
+        return { success: true, id: newNoteId };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    [userId]
+  );
 
-  function deleteNote(id: string) {
-    db.notes.delete(Number(id));
-  }
+  const deleteNote: INotesContext['deleteNote'] = useCallback(
+    async (id: string) => {
+      try {
+        const note = await db.notes.get(Number(id));
+        if (!note) throw new Error('Заметка с таким id не найдена');
+        if (!isOwner(note.userId, userId)) {
+          throw new Error(
+            'Вы не являетесь владельцем этой заметки и не можете её удалить!'
+          );
+        }
+        await db.notes.delete(Number(id));
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    [userId]
+  );
 
-  function updateNoteContent(id: string, content: string) {
-    db.notes.update(Number(id), {
-      content,
-    });
-  }
+  const editNoteTitle: INotesContext['editNoteTitle'] = useCallback(
+    async (id, title) => {
+      try {
+        await db.notes.update(id, { title });
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    []
+  );
 
-  async function getNoteContentFromDB(id: string) {
-    const note = await db.notes.get(Number(id));
-    return note?.content;
-  }
+  const updateNoteContent: INotesContext['updateNoteContent'] = useCallback(
+    async (id, content) => {
+      try {
+        await db.notes.update(Number(id), { content });
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    []
+  );
+
+  const getNoteContentFromDB: INotesContext['getNoteContentFromDB'] =
+    useCallback(
+      async (id: string) => {
+        try {
+          const note = await db.notes.get(Number(id));
+          if (!note) throw new Error('Заметка с таким id не найдена');
+          if (!isOwner(note.userId, userId)) {
+            throw new Error('Отказано в доступе!');
+          }
+          return { success: true, content: note.content };
+        } catch (error) {
+          return {
+            success: false,
+            message:
+              error instanceof Error ? error.message : 'Неизвестная ошибка',
+          };
+        }
+      },
+      [userId]
+    );
 
   const value = {
     notesList,
     addNote,
     deleteNote,
     getNoteContentFromDB,
+    editNoteTitle,
     updateNoteContent,
   };
 

@@ -1,30 +1,42 @@
-import { Button, Input } from '@mantine/core';
+import { Button, TextInput } from '@mantine/core';
+import { UseFormReturnType } from '@mantine/form';
+import { addNoteInputName } from './NotesPanel';
+import { Colors } from '@/types/generalTypes';
 
 interface AddNoteFormProps {
-  inputValue: string;
-  setInputValue: (value: string) => void;
-  handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  resetForm: () => void;
+  handleSubmit: (values: { add_note: string }) => Promise<void>;
+  onReset: () => void;
+  form: UseFormReturnType<
+    {
+      add_note: string;
+    },
+    (values: { add_note: string }) => {
+      add_note: string;
+    }
+  >;
 }
 
 export const AddNoteForm: React.FC<AddNoteFormProps> = ({
-  inputValue,
-  setInputValue,
   handleSubmit,
-  resetForm,
-}) => (
-  <form onSubmit={handleSubmit} onReset={resetForm}>
-    <Input
-      value={inputValue}
-      onChange={e => setInputValue(e.target.value)}
-      onFocus={e => e.currentTarget.select()}
-      autoFocus
-    />
-    <Button type='submit' variant='filled' color='green'>
-      Create Note
-    </Button>
-    <Button type='reset' variant='filled' color='red'>
-      Cancel
-    </Button>
-  </form>
-);
+  onReset,
+  form,
+}) => {
+  return (
+    <form onSubmit={form.onSubmit(handleSubmit)} onReset={onReset}>
+      <TextInput
+        {...form.getInputProps(addNoteInputName)}
+        key={form.key(addNoteInputName)}
+        placeholder='Введите название заметки'
+        onFocus={e => e.currentTarget.select()}
+        data-autofocus
+        mb={'md'}
+      />
+      <Button mr={'sm'} type='submit' variant='filled' color={Colors.Green}>
+        Подтвердить
+      </Button>
+      <Button type='reset' variant='filled' color={Colors.Red}>
+        Отмена
+      </Button>
+    </form>
+  );
+};

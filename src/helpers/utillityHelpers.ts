@@ -1,4 +1,4 @@
-import { Note } from '@/database/db';
+import type { Note } from '@/types/dbTypes';
 
 export function findNextNoteId(array: Note[], index: number): number {
   // if it's the only element in the array return -1
@@ -10,3 +10,12 @@ export function findNextNoteId(array: Note[], index: number): number {
   // return next index in the array
   return array[index + 1].id;
 }
+
+// just compares two current userId and noteOwnerId
+export const isOwner = (
+  noteOwnerId: number | undefined,
+  userId: number | null | undefined
+) => {
+  if (!noteOwnerId || !userId) return false;
+  return noteOwnerId === userId;
+};

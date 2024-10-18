@@ -1,19 +1,31 @@
-import { AuthStatus } from '@/components/AuthStatus';
-import { useAuthContext } from '@/context/AuthProvider';
-import { Button, Fieldset, PasswordInput, TextInput } from '@mantine/core';
+import { useAuthContext } from '@/context/AuthContext';
+import {
+  AppRoutes,
+  Colors,
+  FormFieldNames,
+  Styles,
+} from '@/types/generalTypes';
+import {
+  Button,
+  em,
+  Fieldset,
+  Flex,
+  PasswordInput,
+  Text,
+  TextInput,
+} from '@mantine/core';
 import { hasLength, matchesField, useForm } from '@mantine/form';
-
-enum FormFieldNames {
-  nickname = 'nickname',
-  pass = 'pass',
-  confirm_pass = 'confirm_pass',
-}
+import { useMediaQuery } from '@mantine/hooks';
+import { useNavigate } from 'react-router-dom';
 
 export function SignUp() {
-  const auth = useAuthContext();
+  const { signUp, signIn } = useAuthContext();
+  const navigate = useNavigate();
+  const isMobile = useMediaQuery(`(max-width: ${em(Styles.MobileWidth)})`);
 
   const form = useForm({
     mode: 'uncontrolled',
+    validateInputOnBlur: true,
     initialValues: {
       [FormFieldNames.nickname]: '',
       [FormFieldNames.pass]: '',
@@ -21,58 +33,82 @@ export function SignUp() {
     },
     validate: {
       [FormFieldNames.nickname]: hasLength(
-        { min: 3 },
-        'Must be at least 3 characters'
+        { min: 4 },
+        'Имя пользователя должно содержать минимум 4 символа'
       ),
       [FormFieldNames.pass]: hasLength(
         { min: 6 },
-        'Must be at least 6 characters'
+        'Пароль должен содержать минимум 6 символов'
       ),
       [FormFieldNames.confirm_pass]: matchesField(
         FormFieldNames.pass,
-        'Passwords are not the same'
+        'Пароли не совпадают'
       ),
     },
   });
 
-  const handleSubmit = (values: typeof form.values) => {
-    auth?.signUp(
+  const handleSubmit = async (values: typeof form.values) => {
+    const result = await signUp(
       values[FormFieldNames.nickname],
-      values[FormFieldNames.pass],
-      () => {
-        form.reset();
-      }
+      values[FormFieldNames.pass]
     );
+
+    if (result.success) {
+      form.reset();
+      await signIn(
+        values[FormFieldNames.nickname],
+        values[FormFieldNames.pass]
+      );
+      navigate(`/${AppRoutes.Notes}`, { replace: true });
+    } else {
+      form.setFieldError(FormFieldNames.nickname, result.message);
+    }
   };
 
   return (
-    <>
-      <AuthStatus />
-      <form style={{ margin: '0 25vw' }} onSubmit={form.onSubmit(handleSubmit)}>
-        <Fieldset legend='Signing up'>
+    <Flex direction={'column'} align={'center'} gap={'lg'} mt={'20vh'}>
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Fieldset legend='Регистрация' w={isMobile ? '75vw' : '600px'}>
           <TextInput
             {...form.getInputProps(FormFieldNames.nickname)}
             key={form.key(FormFieldNames.nickname)}
-            label='Nickname'
-            placeholder='Your nickname'
+            label='Ваш логин'
+            placeholder='Введите логин'
           />
           <PasswordInput
             {...form.getInputProps(FormFieldNames.pass)}
             key={form.key(FormFieldNames.pass)}
-            label='Password'
-            placeholder='Password'
+            label='Ваш пароль'
+            placeholder='Введите пароль'
           />
           <PasswordInput
             {...form.getInputProps(FormFieldNames.confirm_pass)}
             key={form.key(FormFieldNames.confirm_pass)}
-            label='Confirm password'
-            placeholder='Confirm password'
+            label='Повторите пароль'
+            placeholder='Повторите пароль'
           />
-          <Button style={{ marginTop: '1rem' }} type='submit' variant='filled'>
-            Sign Up
+          <Button
+            style={{ marginTop: '1rem' }}
+            type='submit'
+            variant='filled'
+            color={Colors.Blue}
+            radius={Styles.BtnRadius}>
+            Зарегистрироваться
           </Button>
         </Fieldset>
       </form>
-    </>
+
+      <Text size='20px'>Уже есть аккаунт в системе?</Text>
+      <Button
+        onClick={() => navigate('/' + AppRoutes.SignIn)}
+        justify='center'
+        variant='filled'
+        color={Colors.Green}
+        size='xl'
+        w={'200px'}
+        radius={Styles.BtnRadius}>
+        Войти
+      </Button>
+    </Flex>
   );
 }

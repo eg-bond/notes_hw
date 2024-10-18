@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
-import { useAuthContext } from '@/context/AuthProvider';
-import { Navigate, useLocation } from 'react-router-dom';
+import { ReactNode, useEffect } from 'react';
+import { useAuthContext } from '@/context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '@/types/generalTypes';
 
 interface PrivateRouteProps {
@@ -8,17 +8,17 @@ interface PrivateRouteProps {
 }
 
 export const PrivateRoute = ({ children }: PrivateRouteProps) => {
-  const auth = useAuthContext();
-  const location = useLocation();
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
 
-  if (auth?.user === null) {
-    return (
-      <Navigate
-        to={`/${AppRoutes.SignIn}`}
-        state={{ from: location.pathname }}
-        replace
-      />
-    );
+  useEffect(() => {
+    if (user === null) {
+      navigate(AppRoutes.Main);
+    }
+  }, []);
+
+  if (user === null) {
+    return null;
   }
 
   return children;

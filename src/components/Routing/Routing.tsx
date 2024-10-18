@@ -7,15 +7,8 @@ import { AppRoutes } from '@/types/generalTypes';
 import { Route, Routes } from 'react-router-dom';
 import { PrivateRoute } from '../PrivateRoute';
 import { WelcomePage } from '@/pages/Welcome';
-import { useAuthContext } from '@/context/AuthProvider';
 
 export default function Routing() {
-  const auth = useAuthContext();
-
-  if (!auth) {
-    return null;
-  }
-
   return (
     <Routes>
       <Route path={AppRoutes.Main} element={<WelcomePage />} />

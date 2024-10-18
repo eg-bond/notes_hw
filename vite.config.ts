@@ -15,4 +15,8 @@ export default defineConfig({
     open: true,
     port: 8090,
   },
+  preview: {
+    open: true,
+    port: 7090,
+  },
 });

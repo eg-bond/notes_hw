@@ -1,55 +1,62 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Button } from '@mantine/core';
 import { useNotesContext } from '@/context/NotesContext';
-import { useInputState } from '@mantine/hooks';
-import { AppRoutes } from '@/types/generalTypes';
-import { AddNoteForm } from './AddNoteForm';
 import { NotesList } from './NotesList';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { AddNoteModal } from './AddNoteModal';
+import { EditNoteTitleModal } from './EditNoteTitleModal';
+import { useNoteModal } from '@/hooks/useNoteModal';
+import { IconPlus } from '@tabler/icons-react';
 
-export const INITIAL_NOTE_TITLE = 'Без заголовка';
+export const addNoteInputName = 'add_note';
 
 export function NotesPanel() {
-  const navigate = useNavigate();
-  const { notesList, addNote } = useNotesContext();
-  const [isInputVisible, setInputVisible] = useState(false);
-  const [inputValue, setInputValue] = useInputState(INITIAL_NOTE_TITLE);
+  const { notesList } = useNotesContext();
+  const addNoteModal = useNoteModal();
+  const editNoteTitleModal = useNoteModal();
+  const [noteIdToEdit, setNoteIdToEdit] = useState<number>(0);
 
-  const handleAddNote = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
+  const openEditNoteTitleModal = (noteId: number, title: string) => {
+    form.setFieldValue(addNoteInputName, title);
+    editNoteTitleModal.open();
+    setNoteIdToEdit(noteId);
+  };
 
-      const newNoteId = await addNote(inputValue);
-      navigate(`/${AppRoutes.Notes}/${newNoteId}`);
-      setInputValue(INITIAL_NOTE_TITLE);
-      setInputVisible(false);
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      [addNoteInputName]: '',
     },
-    [inputValue, addNote, navigate, setInputValue]
-  );
+    validate: {
+      [addNoteInputName]: isNotEmpty('Название не может быть пустым'),
+    },
+  });
 
   if (!notesList) return null;
 
   return (
-    <div>
-      <NotesList notesList={notesList} />
-      {isInputVisible ? (
-        <AddNoteForm
-          inputValue={inputValue}
-          setInputValue={setInputValue}
-          handleSubmit={handleAddNote}
-          resetForm={() => {
-            setInputValue(INITIAL_NOTE_TITLE);
-            setInputVisible(false);
-          }}
-        />
-      ) : (
-        <Button
-          onClick={() => setInputVisible(true)}
-          variant='filled'
-          color='indigo'>
-          Add note
-        </Button>
-      )}
-    </div>
+    <>
+      <NotesList
+        notesList={notesList}
+        openEditNoteTitleModal={openEditNoteTitleModal}
+      />
+      <Button
+        onClick={addNoteModal.open}
+        justify='center'
+        fullWidth
+        leftSection={<IconPlus />}
+        variant='default'
+        radius={'0'}>
+        Добавить заметку
+      </Button>
+
+      <AddNoteModal form={form} addNoteModal={addNoteModal} />
+
+      <EditNoteTitleModal
+        form={form}
+        editNoteTitleModal={editNoteTitleModal}
+        noteIdToEdit={noteIdToEdit}
+      />
+    </>
   );
 }
