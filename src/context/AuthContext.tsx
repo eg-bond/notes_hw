@@ -75,7 +75,7 @@ export function AuthProvider({ children }: ProviderProps) {
     } catch (error) {
       return {
         success: false,
-        message: error?.message,
+        message: error instanceof Error ? error.message : 'Неизвестная ошибка',
       };
     }
   }, []);
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: ProviderProps) {
       }
       return {
         success: false,
-        message: error?.message,
+        message: error instanceof Error ? error.message : 'Неизвестная ошибка',
       };
     }
   }, []);
@@ -111,7 +111,7 @@ export function AuthProvider({ children }: ProviderProps) {
     } catch (error) {
       return {
         success: false,
-        message: error?.message,
+        message: error instanceof Error ? error.message : 'Неизвестная ошибка',
       };
     }
   }, [userId]);

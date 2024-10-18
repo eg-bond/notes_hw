@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useNotesContext } from '@/context/NotesContext';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
-import { findNextNoteId } from '@/helpers/findNextNoteId';
+import { findNextNoteId } from '@/helpers/utillityHelpers';
 import { AppRoutes } from '@/types/generalTypes';
 import { SelectedNote } from './SelectedNote';
 

@@ -10,3 +10,11 @@ export function findNextNoteId(array: Note[], index: number): number {
   // return next index in the array
   return array[index + 1].id;
 }
+
+export const isOwner = (
+  noteOwnerId: number | undefined,
+  userId: number | null | undefined
+) => {
+  if (!noteOwnerId || !userId) return false;
+  return noteOwnerId === userId;
+};

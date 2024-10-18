@@ -1,7 +1,8 @@
-import { createContext, useContext } from 'react';
+import { createContext, useCallback, useContext } from 'react';
 import { db } from '@/database/db';
 import { useAuthContext } from './AuthContext';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { isOwner } from '@/helpers/utillityHelpers';
 import type { INotesContext, ProviderProps } from '@/types/contextTypes';
 
 const NotesContext = createContext<INotesContext | null>(null);
@@ -16,107 +17,109 @@ export function useNotesContext() {
   return context;
 }
 
-const isOwner = (
-  noteOwnerId: number | undefined,
-  userId: number | null | undefined
-) => {
-  if (!noteOwnerId || !userId) return false;
-  return noteOwnerId === userId;
-};
-
 export function NotesProvider({ children }: ProviderProps) {
-  const auth = useAuthContext();
+  const { userId } = useAuthContext();
 
+  // observable live query to get notes from db
   const notesList = useLiveQuery(
-    () => db.notes.where({ userId: auth?.userId || 0 }).toArray(),
-    [auth.userId],
+    () => db.notes.where({ userId: userId || 0 }).toArray(),
+    [userId],
     []
   );
 
-  const addNote: INotesContext['addNote'] = async title => {
-    try {
-      const newNote = { userId: auth.userId as number, title, content: '' };
-      const newNoteId = await db.notes.add(newNote);
-      return { success: true, id: newNoteId };
-    } catch (error) {
-      return {
-        success: false,
-        message: error?.message,
-      };
-    }
-  };
-
-  const deleteNote: INotesContext['deleteNote'] = async id => {
-    try {
-      const note = await db.notes.get(Number(id));
-      if (isOwner(note?.userId, auth.userId)) {
-        db.notes.delete(Number(id));
-        return { success: true };
-      } else {
-        return {
-          success: false,
-          message:
-            'Вы не являетесь владельцем этой заметки и не можете её удалить!',
-        };
-      }
-    } catch (error) {
-      return {
-        success: false,
-        message: error?.message,
-      };
-    }
-  };
-
-  const editNoteTitle: INotesContext['editNoteTitle'] = async (id, title) => {
-    try {
-      db.notes.update(Number(id), {
-        title,
-      });
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error?.message,
-      };
-    }
-  };
-
-  const updateNoteContent: INotesContext['updateNoteContent'] = async (
-    id,
-    content
-  ) => {
-    try {
-      db.notes.update(Number(id), {
-        content,
-      });
-      return { success: true };
-    } catch (error) {
-      return {
-        success: false,
-        message: error?.message,
-      };
-    }
-  };
-
-  const getNoteContentFromDB: INotesContext['getNoteContentFromDB'] =
-    async id => {
+  const addNote: INotesContext['addNote'] = useCallback(
+    async (title: string) => {
       try {
-        const note = await db.notes.get(Number(id));
-        if (isOwner(note?.userId, auth?.userId)) {
-          return { success: true, content: note?.content || '' };
-        } else {
-          return {
-            success: false,
-            message: 'Отказано в доступе',
-          };
-        }
+        if (!userId) throw new Error('Пользователь не вошел в систему');
+        const newNote = { userId, title, content: '' };
+        const newNoteId = await db.notes.add(newNote);
+        return { success: true, id: newNoteId };
       } catch (error) {
         return {
           success: false,
-          message: error?.message,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
         };
       }
-    };
+    },
+    [userId]
+  );
+
+  const deleteNote: INotesContext['deleteNote'] = useCallback(
+    async (id: string) => {
+      try {
+        const note = await db.notes.get(Number(id));
+        if (!note) throw new Error('Заметка с таким id не найдена');
+        if (!isOwner(note.userId, userId)) {
+          throw new Error(
+            'Вы не являетесь владельцем этой заметки и не можете её удалить!'
+          );
+        }
+        await db.notes.delete(Number(id));
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    [userId]
+  );
+
+  const editNoteTitle: INotesContext['editNoteTitle'] = useCallback(
+    async (id, title) => {
+      try {
+        await db.notes.update(id, { title });
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    []
+  );
+
+  const updateNoteContent: INotesContext['updateNoteContent'] = useCallback(
+    async (id, content) => {
+      try {
+        await db.notes.update(Number(id), { content });
+        return { success: true };
+      } catch (error) {
+        return {
+          success: false,
+          message:
+            error instanceof Error ? error.message : 'Неизвестная ошибка',
+        };
+      }
+    },
+    []
+  );
+
+  const getNoteContentFromDB: INotesContext['getNoteContentFromDB'] =
+    useCallback(
+      async (id: string) => {
+        try {
+          const note = await db.notes.get(Number(id));
+          if (!note) throw new Error('Заметка с таким id не найдена');
+          if (!isOwner(note.userId, userId)) {
+            throw new Error('Отказано в доступе!');
+          }
+          return { success: true, content: note.content };
+        } catch (error) {
+          return {
+            success: false,
+            message:
+              error instanceof Error ? error.message : 'Неизвестная ошибка',
+          };
+        }
+      },
+      [userId]
+    );
 
   const value = {
     notesList,
