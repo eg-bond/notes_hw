@@ -1,8 +1,8 @@
 import { AppRoutes, Colors } from '@/types/generalTypes';
 import { NavLink } from 'react-router-dom';
-import { NavLink as MantineNavlink, Menu, rem } from '@mantine/core';
+import { NavLink as MantineNavlink, Menu } from '@mantine/core';
 import { IconPencil } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Note } from '@/types/dbTypes';
 
 interface NotesListProps {
@@ -16,10 +16,13 @@ export const NotesList: React.FC<NotesListProps> = ({
 }) => {
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
 
-  const handleContextMenu = (event: React.MouseEvent, noteId: number) => {
-    event.preventDefault();
-    setOpenMenuId(noteId);
-  };
+  const handleContextMenu = useCallback(
+    (event: React.MouseEvent, noteId: number) => {
+      event.preventDefault();
+      setOpenMenuId(noteId);
+    },
+    [setOpenMenuId]
+  );
 
   return (
     <ul style={{ padding: 0, margin: 0 }}>
@@ -34,6 +37,7 @@ export const NotesList: React.FC<NotesListProps> = ({
                 <MantineNavlink
                   variant='filled'
                   fw={'bold'}
+                  p={'sm'}
                   autoContrast
                   color={Colors.Blue}
                   description={note.title}
@@ -48,9 +52,7 @@ export const NotesList: React.FC<NotesListProps> = ({
               <Menu.Item
                 onClick={() => openEditNoteTitleModal(note.id, note.title)}
                 color={Colors.Orange}
-                leftSection={
-                  <IconPencil style={{ width: rem(14), height: rem(14) }} />
-                }>
+                leftSection={<IconPencil />}>
                 Изменить название
               </Menu.Item>
             </Menu.Dropdown>
